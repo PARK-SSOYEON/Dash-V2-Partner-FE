@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import '../../../shared/styles/QRScanner.css';
 import {
     Html5Qrcode,
     Html5QrcodeSupportedFormats,
@@ -49,7 +50,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
         };
 
         console.log("📌 [QRScanner] calling html5QrCode.start()");
-        
+
         const startScanner = () => {
             console.log("📌 [QRScanner] calling html5QrCode.start() after delay");
             html5QrCode
@@ -125,11 +126,11 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
         <div className="flex flex-col items-center justify-center space-y-2 bg-white">
             <div
                 className="relative"
-                style={{width: 320, height: 450, background: "#eee"}}
+                style={{width: 320, height: 450}}
             >
                 <div
                     id={scannerId}
-                    className="w-full h-full bg-white rounded-3xl overflow-hidden"
+                    className="w-full h-full bg-white rounded-3xl overflow-hidden qr-scanner-container"
                     style={{ width: "100%", height: "100%" }}
                 />
 

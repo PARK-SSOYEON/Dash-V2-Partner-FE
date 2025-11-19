@@ -1,0 +1,13 @@
+
+/* .qr-scanner-container 클래스 내부에 생성되는 video 태그를 타겟팅 */
+.qr-scanner-container video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transform: none; /* 후면 카메라 */
+}
+
+/* 필요하다면 전면 카메라용 스타일 */
+.user-camera video {
+    transform: scaleX(-1);
+}
