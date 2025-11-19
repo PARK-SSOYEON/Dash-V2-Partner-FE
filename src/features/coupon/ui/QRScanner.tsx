@@ -33,7 +33,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         const verbose = false;
         const scanner = new Html5QrcodeScanner(scannerId, config, verbose);
-        console.log("📌 [QRScanner] clearing previous scanner");
+        console.log("📌 [QRScanner] scanner created:", scanner);
 
         scannerRef.current = scanner;
 
