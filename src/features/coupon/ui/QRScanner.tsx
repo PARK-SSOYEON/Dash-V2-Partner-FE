@@ -16,6 +16,12 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
     useEffect(() => {
         console.log("📌 [QRScanner] useEffect fired");
 
+        if (hasStartedRef.current) {
+            console.log("📌 [QRScanner] already started, skipping (StrictMode guard)");
+            return;
+        }
+        hasStartedRef.current = true;
+
         const container = document.getElementById(scannerId);
         if (!container) {
             console.error("❌ [QRScanner] container not found:", scannerId);
@@ -36,7 +42,9 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             fps: 10,
             qrbox: { width: 320, height: 450 },
             formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-            // 여기서는 BarcodeDetector 안 씀 (엔진 기본 구현 사용)
+            experimentalFeatures: {
+                useBarCodeDetectorIfSupported: false,
+            },
         };
 
         console.log("📌 [QRScanner] calling html5QrCode.start()");
@@ -50,10 +58,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
                     setIsScanned(true);
                     onScanSuccess(decodedText);
                 },
-                (errorMessage: string) => {
-                    // 스캔 실패 로그 (너무 자주 찍힐 수 있어서 warn 정도로)
-                    console.warn("📌 [QRScanner] scan error:", errorMessage);
-                }
+                () => {}
             )
             .then(() => {
                 console.log("📌 [QRScanner] html5QrCode.start() resolved");

@@ -97,11 +97,13 @@ export const QRScanCard: React.FC = () => {
         <div className="flex flex-col w-full items-center justify-center h-full p-6 text-center">
             <QRScanner onScanSuccess={handleScanSuccess} scannerId={qrScannerId}/>
 
-            <div className="flex flex-col w-full mt-6 p-4 justify-start text-left">
-                <p className="font-bold text-lg text-black">{product?.productName || "상품명 인식중..."}</p>
-                <p className="font-medium text-base text-black/60">{product?.partnerName || "파트너명 인식중..."}</p>
-                <p className="font-medium text-base text-black/60">{product?.expiredAt ? `유효 기간 ~${product.expiredAt}` : "유효기간 인식중..."}</p>
-            </div>
+            {!isError && (
+                <div className="flex flex-col w-full mt-6 p-4 justify-start text-left">
+                    <p className="font-bold text-lg text-black">{product?.productName || "상품명 인식중..."}</p>
+                    <p className="font-medium text-base text-black/60">{product?.partnerName || "파트너명 인식중..."}</p>
+                    <p className="font-medium text-base text-black/60">{product?.expiredAt ? `유효 기간 ~${product.expiredAt}` : "유효기간 인식중..."}</p>
+                </div>
+            )}
 
             {isError && ( //isError는 2초 지나면 다시 false
                 <div className="flex flex-col w-full mt-6 p-4 justify-start text-left">
