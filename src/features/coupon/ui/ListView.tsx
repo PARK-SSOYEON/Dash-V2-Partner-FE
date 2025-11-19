@@ -52,7 +52,7 @@ export function ListView() {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-center flex-shrink-0 pl-3">
+                        <div className="flex items-center justify-center flex-shrink-0">
                             <Icon name={"rightChevron"} size={24}/>
                         </div>
                     </button>

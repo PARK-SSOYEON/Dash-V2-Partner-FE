@@ -135,7 +135,7 @@ export const QRScanCard: React.FC = () => {
     return (
         <div
             className={cn("flex flex-col gap-4 w-full ",
-                isLandscape ? "min-h-[calc(100vh-var(--header-h,68px)-150px)]" : "min-h-[calc(100vh-var(--header-h,68px)-var(--bottom-nav-h,66px)-200px)]"
+                isLandscape ? "min-h-[calc(100vh-var(--header-h,68px)-240px)]" : "min-h-[calc(100vh-var(--header-h,68px)-var(--bottom-nav-h,66px)-200px)]"
             )}>
             <div
                 className={"flex flex-1 flex-col pt-4 w-full h-full gap-4 rounded-3xl " +

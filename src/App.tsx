@@ -58,7 +58,7 @@ function App() {
             {!(isLogin || isSign) && (
                 <TabletLayout isLandscape={isLandscape}>
                     {isLandscape ? (
-                        <div className="flex gap-16 pt-8 h-screen">
+                        <div className="flex gap-16 pt-4 h-screen">
                             <div
                                 className="w-2/3 no-scrollbar"
                                 style={{
