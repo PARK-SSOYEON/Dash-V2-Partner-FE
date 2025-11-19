@@ -12,12 +12,13 @@ import type {Product} from "../model/productType.ts";
 import {useApproveIssue} from "../model/useApproveIssue.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
 import {useCreateSelfIssue} from "../model/useCreateSelfIssue.ts";
+import type {SelfIssueProduct} from "../api/createSelfIssue.ts";
 
 const mapProductsToIssueItems = (products: Product[]): IssueItem[] =>
     products.map((p) => ({
         rowId: crypto.randomUUID(),
         productId: p.productId,
-        isNew: p.isNew,
+        isNew: false,
         name: p.productName ?? "",
         qty: p.count,
     }));
@@ -26,7 +27,16 @@ const mapIssueItemsToProducts = (items: IssueItem[]): Product[] => {
     return items.map((item) => ({
         isNew: item.isNew,
         productId: item.isNew ? undefined : item.productId,
-        productName: item.name,
+        productName: item.isNew ? item.name : undefined,
+        count: item.qty,
+    }));
+};
+
+const mapIssueItemsToSelfIssueProducts = (items: IssueItem[]): SelfIssueProduct[] => {
+    return items.map((item) => ({
+        isNew: item.isNew,
+        productId: item.isNew ? undefined : item.productId,
+        productName: item.isNew ? item.name : undefined,
         count: item.qty,
     }));
 };
@@ -191,7 +201,7 @@ export function CouponPublishPage() {
             }
         }
 
-        const mappedProducts: Product[] = mapIssueItemsToProducts(items);
+        const mappedProducts: SelfIssueProduct[] = mapIssueItemsToSelfIssueProducts(items);
 
         createSelfIssueMutate(
             {

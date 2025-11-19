@@ -8,7 +8,7 @@ export interface IssueProductExisting {
 }
 
 export interface IssueProductNew {
-    isNew: true;
+    isNew?: true;
     productName?: string;
     count: number;
 }
