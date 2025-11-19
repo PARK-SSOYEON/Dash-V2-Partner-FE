@@ -9,6 +9,7 @@ export function MypageSection() {
             title: "회원정보 수정",
             items: [
                 {label: "전화번호 추가", enabled: true, link: './phone'},
+                {label: "PIN 변경", enabled: true, link: './pin'},
             ],
         },
         {

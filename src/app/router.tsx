@@ -11,6 +11,7 @@ import NotificationRoute from "./routes/Notification.tsx";
 import {PublicRoute} from "./routes/PublicRoute.tsx";
 import CouponWrappertRoute from "./routes/CouponWrapper.tsx";
 import CouponPublishRoute from "./routes/CouponPublish.tsx";
+import SettingPinRoute from "./routes/SettingPin.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
             {path: "notice", element: <NotificationRoute/>},
             {path: "settings", element: <SettingsRoute/>},
             {path: "settings/phone", element: <SettingPhoneRoute/>},
+            {path: "settings/pin", element: <SettingPinRoute/>}
         ],
     },
 ]);
