@@ -17,9 +17,9 @@ export function IssueRequest({issue}: {issue: IssueRequestDetailResponse}) {
     const navigate = useNavigate();
 
     const [menuItems, setMenuItems] = useState<IssueItem[]>([
-        {id: "1", name: "오리지널 타코야끼", qty: 5},
-        {id: "2", name: "네기 타코야끼", qty: 100},
-        {id: "3", name: "눈꽃치즈 타코야끼", qty: 1000},
+        {rowId: "1", isNew: true, name: "오리지널 타코야끼", qty: 5},
+        {rowId: "2", isNew: true, name: "네기 타코야끼", qty: 100},
+        {rowId: "3", isNew: true, name: "눈꽃치즈 타코야끼", qty: 1000},
     ]);
 
     const isPending = issue.status === "ISSUE_STATUS/PENDING";
