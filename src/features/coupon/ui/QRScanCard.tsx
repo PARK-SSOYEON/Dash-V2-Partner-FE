@@ -4,6 +4,7 @@ import {Icon} from "../../../shared/ui/Icon.tsx";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
 import {cn} from "../../../shared/lib/cn.ts";
+import {usePaymentTransaction} from "../model/usePaymentTransaction.ts";
 
 interface ProductData {
     couponId: number;
@@ -14,18 +15,13 @@ interface ProductData {
 
 type Step = 'SCAN' | 'COMPLETE';
 
-const mockProduct: ProductData = {
-    couponId: 1,
-    productName: '오리지널 타코야끼',
-    partnerName: '호시 타코야끼',
-    expiredAt: '2025.11.17. 15:25:30'
-};
-
 export const QRScanCard: React.FC = () => {
     const [step, setStep] = useState<Step>('SCAN');
     const [product, setProduct] = useState<ProductData | null>(null);
 
     const isLandscape = useIsLandscape();
+    const [isError, setIsError] = useState(false);
+    const paymentTx = usePaymentTransaction();
 
     React.useEffect(() => {
         if (step === 'COMPLETE') {
@@ -41,9 +37,24 @@ export const QRScanCard: React.FC = () => {
 
     const handleScanSuccess = useCallback((decodedText: string) => {
         console.log("QR Code Scanned:", decodedText);
-        // 실제 로직: decodedText (QR 값)를 서버에 보내 상품 정보를 가져옵니다.
 
-        setProduct(mockProduct);
+        paymentTx.mutate(decodedText, {
+            onSuccess: (data) => {
+                setProduct({
+                    couponId: data.couponId,
+                    productName: data.productName,
+                    partnerName: data.vendorName,
+                    expiredAt: data.expiredAt,
+                });
+            },
+            onError: () => {
+                setIsError(true);
+
+                setTimeout(() => {
+                    setIsError(false);
+                }, 2000);
+            }
+        });
     }, []);
 
     const handleUse = () => {
@@ -57,8 +68,15 @@ export const QRScanCard: React.FC = () => {
             <div className="flex flex-col w-full mt-6 p-4 justify-start text-left">
                 <p className="font-bold text-lg text-black">{product?.productName || "상품명 인식중..."}</p>
                 <p className="font-medium text-base text-black/60">{product?.partnerName || "파트너명 인식중..."}</p>
-                <p className="font-medium text-base text-black/60">{product?.expiredAt ? `유효 기간 ~${mockProduct.expiredAt}` : "유효기간 인식중..."}</p>
+                <p className="font-medium text-base text-black/60">{product?.expiredAt ? `유효 기간 ~${product.expiredAt}` : "유효기간 인식중..."}</p>
             </div>
+
+            {isError && ( //isError는 2초 지나면 다시 false
+                <div className="flex flex-col w-full mt-6 p-4 justify-start text-left">
+                    <p className="font-bold text-lg text-black">올바른 결제코드가 아니에요</p>
+                    <p className="font-medium text-base text-black/60">결제코드를 확인 후 다시 인식해주세요</p>
+                </div>
+            )}
 
         </div>
     )
@@ -107,6 +125,5 @@ export const QRScanCard: React.FC = () => {
                         onClick={handleUse}> 쿠폰 사용 </Button>
                 </div>}
         </div>
-
     );
 };
