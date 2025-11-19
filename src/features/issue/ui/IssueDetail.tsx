@@ -103,7 +103,7 @@ export function IssueDetail() {
                 status !== "ISSUE_STATUS/REJECTED" &&
                 issueCoupons &&
                 issueCoupons.isApproved && (
-                    <CouponHistory issueInfo={issueCoupons.issueInfo} />
+                    <CouponHistory issueInfo={issueCoupons.issueInfo} issueId={issueId} />
                 )}
 
             {issue &&
