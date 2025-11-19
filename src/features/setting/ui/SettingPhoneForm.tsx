@@ -5,6 +5,7 @@ import {formatPhone, isValidPhone} from "../../../shared/lib/phone.ts";
 import {isValidOtp} from "../../../shared/lib/otp.ts";
 import {Input} from "../../../shared/ui/input/Input.tsx";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
+import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
 type IssueStep = "phone" | "otp";
 
 
@@ -19,6 +20,7 @@ export function SettingPhoneForm() {
     const otpValid = isValidOtp(otp);
 
     const navigate=useNavigate();
+    const isLandScape = useIsLandscape();
 
     const goNextFromPhone = () => {
         if (!phoneValid) {
@@ -76,8 +78,11 @@ export function SettingPhoneForm() {
             <div
                 className={"flex flex-row gap-3 fixed left-1/2 -translate-x-1/2 supports-[backdrop-filter]:bg-white/50 backdrop-blur-md "}
                 style={{
-                    width: "min(calc(100vw - (var(--gutter,24px) * 2)), calc(var(--container-max,450px) - (var(--gutter,24px) * 2)))",
-                    bottom: "max(1.5rem, env(safe-area-inset-bottom))",
+                    width: isLandScape
+                        ? "calc(((100vw * 2 / 3) - (var(--gutter,48px) * 2))*0.7)"
+                        : "calc((100vw - (var(--gutter,48px) * 2))*0.7)",
+                    left: isLandScape ? "33vw" : "50%",
+                    bottom: "max(2rem, env(safe-area-inset-bottom))",
                     height: "var(--bottom-nav-h,66px)",
                 }}>
                 <Button

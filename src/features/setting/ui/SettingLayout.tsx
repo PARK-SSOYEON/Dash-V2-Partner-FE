@@ -19,7 +19,7 @@ export function SettingLayout({children}: { children?: React.ReactNode }) {
         ? "subtitle" : undefined;
 
     return (
-        <div className="flex flex-col pt-4 w-full gap-4 min-h-[calc(100vh-var(--bottom-nav-h,66px)-40px)]">
+        <div className="flex flex-col pt-4 w-full gap-4 min-h-[calc(100vh-var(--bottom-nav-h,66px)-80px)]">
             <header className="flex items-center justify-between h-17">
                 <h1 className="text-3xl font-bold tracking-tight text-black">
                     설정
