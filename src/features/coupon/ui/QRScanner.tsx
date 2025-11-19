@@ -1,12 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import React, {useEffect, useRef, useState} from "react";
+import {
+    Html5QrcodeScanner,
+    Html5QrcodeSupportedFormats,
+    Html5QrcodeScanType,
+} from "html5-qrcode";
 
 interface QRScannerProps {
     onScanSuccess: (decodedText: string) => void;
     scannerId: string;
 }
 
-export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }) => {
+export const QRScanner: React.FC<QRScannerProps> = ({onScanSuccess, scannerId}) => {
 
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
     const [isScanned, setIsScanned] = useState(false);
@@ -26,9 +30,12 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         const config = {
             fps: 10,
-            qrbox: { width: 320, height: 450 },
+            qrbox: {width: 320, height: 450},
             rememberLastUsedCamera: true,
             aspectRatio: 1.0,
+            useBarCodeDetectorIfSupported: false,
+            formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
         };
 
         const verbose = true;
