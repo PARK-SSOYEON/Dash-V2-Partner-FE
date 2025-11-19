@@ -14,3 +14,8 @@ export interface IssueListResponse {
     size: number;
     pages: number;
 }
+
+export type ProductSuggestion = {
+    productId: number;
+    name: string;
+};

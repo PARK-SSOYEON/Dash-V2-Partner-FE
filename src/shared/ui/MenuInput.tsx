@@ -2,9 +2,10 @@ import * as React from "react";
 import {cva} from "class-variance-authority";
 import {cn} from "../lib/cn.ts";
 import {Icon} from "./Icon.tsx";
+import type {ProductSuggestion} from "../../features/issue/model/types.ts";
 
 export type IssueItem = {
-    id: string;
+    rowId: string;
     productId?: number;
     isNew: boolean;
     name: string;
@@ -45,7 +46,7 @@ const inputBaseByMode = cva(
                 view: "bg-transparent border-transparent focus:ring-0 cursor-default select-none",
             },
         },
-        defaultVariants: { mode: "view" },
+        defaultVariants: {mode: "view"},
     }
 );
 
@@ -62,9 +63,14 @@ type MenuInputProps = {
     onAdd?: () => void;
     className?: string;
     mode?: MenuMode; // "view" | "edit" (default: "view")
+
     titleLeft?: string;   // 기본: "품목명"
     titleMid?: string;    // 기본: "발행수량"
     titleRight?: string;  // 기본: "기능" (edit 모드일 때만 보임)
+
+    onSearchKeywordChange?: (keyword: string, rowId: string) => void; // 인풋 타이핑
+    suggestionsById?: Record<string, ProductSuggestion[]>;
+    onSelectSuggestion?: (rowId: string, productId: number) => void;
 };
 
 export const MenuInput: React.FC<MenuInputProps> = ({
@@ -77,10 +83,13 @@ export const MenuInput: React.FC<MenuInputProps> = ({
                                                         titleLeft = "품목명",
                                                         titleMid = "발행수량",
                                                         titleRight = "기능",
+                                                        onSearchKeywordChange,
+                                                        suggestionsById,
+                                                        onSelectSuggestion,
                                                     }) => {
     const updateItem = React.useCallback(
         (id: string, patch: Partial<IssueItem>) => {
-            const next = items.map((it) => (it.id === id ? {...it, ...patch} : it));
+            const next = items.map((it) => (it.rowId === id ? {...it, ...patch} : it));
             onChange(next);
         },
         [items, onChange]
@@ -106,17 +115,36 @@ export const MenuInput: React.FC<MenuInputProps> = ({
 
             <ul>
                 {items.map((it) => (
-                    <li key={it.id} className={rowClass({mode})}>
+                    <li key={it.rowId} className={rowClass({mode})}>
                         {/* 품목명 */}
                         <input
                             className={nameInputByMode({mode})}
                             value={it.name}
-                            onChange={(e) => updateItem(it.id, {name: e.target.value})}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                updateItem(it.rowId, {name: value, isNew: true, productId: undefined});
+                                onSearchKeywordChange?.(value, it.rowId);
+                            }}
                             placeholder="제품명을 입력하세요"
                             readOnly={mode === "view"}
                             tabIndex={mode === "view" ? -1 : 0}
                             aria-readonly={mode === "view"}
                         />
+
+                        {suggestionsById?.[it.rowId]?.length ? (
+                            <div
+                                className="absolute left-0 right-0 mt-1 bg-white rounded-xl shadow-lg z-20 p-2 flex flex-col gap-1"
+                            >
+                                {suggestionsById[it.rowId].map((s) => (
+                                    <button
+                                        key={s.productId}
+                                        onClick={() => onSelectSuggestion?.(it.rowId, s.productId)}
+                                    >
+                                        {s.name}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : null}
 
                         {/* 발행 수량 + 단위 */}
                         <div className="flex items-center justify-end gap-0">
@@ -125,7 +153,7 @@ export const MenuInput: React.FC<MenuInputProps> = ({
                                 inputMode="numeric"
                                 pattern="[0-9]*"
                                 value={String(it.qty ?? 0)}
-                                onChange={(e) => handleQtyChange(it.id, e.target.value)}
+                                onChange={(e) => handleQtyChange(it.rowId, e.target.value)}
                                 readOnly={mode === "view"}
                                 tabIndex={mode === "view" ? -1 : 0}
                                 aria-readonly={mode === "view"}
@@ -139,7 +167,7 @@ export const MenuInput: React.FC<MenuInputProps> = ({
                                 type="button"
                                 aria-label="행 삭제"
                                 className="grid place-items-center w-[40px] h-[40px] rounded-full text-(--color-red-300) bg-white border-(--color-gray-350)"
-                                onClick={() => onDelete?.(it.id)}
+                                onClick={() => onDelete?.(it.rowId)}
                             >
                                 <Icon name={"trashcan"} size={24}/>
                             </button>

@@ -2,7 +2,8 @@ import {useUIStore} from "../../../shared/store/uiStore.ts";
 import * as React from "react";
 import {useState} from "react";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
-import {type IssueItem, MenuInput} from "../../../shared/ui/MenuInput.tsx";
+import { type IssueItem } from "../../../shared/ui/MenuInput.tsx";
+import { MenuInputWithSearch } from "./MenuInputWithSearch.tsx";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {DetailBox, type DetailItem} from "../../../shared/ui/DetailBox.tsx";
 import {formatDate} from "../lib/formDate.ts";
@@ -13,7 +14,7 @@ import type {ApiError} from "../../../shared/types/api.ts";
 
 const mapProductsToIssueItems = (products: Product[]): IssueItem[] =>
     products.map((p) => ({
-        id: crypto.randomUUID(),
+        rowId: crypto.randomUUID(),
         productId: p.productId,
         isNew: p.isNew,
         name: p.productName ?? "",
@@ -50,6 +51,7 @@ export function CouponPublishPage() {
 
     const isOwner = state?.isOwner ?? true;
     const issue = state && "issue" in state ? state.issue : undefined;
+    const partnerId = issue?.partner?.partnerId ? String(issue.partner.partnerId) : "";
 
     const { mutate: approveIssue } = useApproveIssue();
 
@@ -183,17 +185,18 @@ export function CouponPublishPage() {
             {/* 발행 품목 및 수량 */}
             <div className="flex flex-col w-full text-xl font-bold gap-4 mt-4">
                 발행품목 및 수량
-                <MenuInput
+                <MenuInputWithSearch
+                    partnerId={partnerId}
                     items={items}
                     onChange={setItems}
                     onDelete={(id) =>
-                        setItems((prev) => prev.filter((x) => x.id !== id))
+                        setItems((prev) => prev.filter((x) => x.rowId !== id))
                     }
                     onAdd={() =>
                         setItems((prev) => [
                             ...prev,
                             {
-                                id: crypto.randomUUID(),
+                                rowId: crypto.randomUUID(),
                                 productId: undefined,
                                 isNew: true,
                                 name: "",
