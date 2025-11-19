@@ -1,6 +1,7 @@
 import axios from "axios";
 import {apiClient} from "../../../shared/lib/apiClient.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
+import {hashPin} from "../lib/hashPin.ts";
 
 export interface RegisterPartnerBody {
     phoneAuthToken: string;
@@ -25,7 +26,11 @@ export interface RegisterPartnerResponse {
  */
 export async function registerPartner(body: RegisterPartnerBody): Promise<RegisterPartnerResponse> {
     try {
-        const res = await apiClient.post<RegisterPartnerResponse>("/auth/join/partner", body);
+        const hashedBody = {
+            ...body,
+            pin: hashPin(body.pin),
+        };
+        const res = await apiClient.post<RegisterPartnerResponse>("/auth/join/partner", hashedBody);
         return res.data;
     } catch (err) {
         if (axios.isAxiosError(err)) {
