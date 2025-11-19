@@ -5,6 +5,8 @@ import {Icon} from "./Icon.tsx";
 
 export type IssueItem = {
     id: string;
+    productId?: number;
+    isNew: boolean;
     name: string;
     qty: number;
 };

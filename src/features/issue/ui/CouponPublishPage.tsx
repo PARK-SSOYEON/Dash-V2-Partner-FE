@@ -3,39 +3,47 @@ import * as React from "react";
 import {useState} from "react";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {type IssueItem, MenuInput} from "../../../shared/ui/MenuInput.tsx";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {DetailBox, type DetailItem} from "../../../shared/ui/DetailBox.tsx";
 import {formatDate} from "../lib/formDate.ts";
-import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
+import type {IssueRequestDetailResponse} from "../api/getIssueRequestDetail.ts";
+import type {Product} from "../model/productType.ts";
+import {useApproveIssue} from "../model/useApproveIssue.ts";
+import type {ApiError} from "../../../shared/types/api.ts";
 
-export type IssueInformation = {
-    id: string;
-    title: string;
-    memberName?: string;
-    phone?: string;
-    date: string;
-    menu: IssueItem[];
+const mapProductsToIssueItems = (products: Product[]): IssueItem[] =>
+    products.map((p) => ({
+        id: crypto.randomUUID(),
+        productId: p.productId,
+        isNew: p.isNew,
+        name: p.productName ?? "",
+        qty: p.count,
+    }));
+
+const mapIssueItemsToProducts = (items: IssueItem[]): Product[] => {
+    return items.map((item) => ({
+        isNew: item.isNew,
+        productId: item.isNew ? undefined : item.productId,
+        productName: item.name,
+        count: item.qty,
+    }));
 };
 
 
 type PublishLocationState =
     | {
-    /** 작성자가 본인인지 여부 (본인이 직접 발행) */
-    isOwner: true;
-    /** 직접 발행이므로 기존 issue 데이터는 없다 */
+    isOwner: true; //작성자가 본인
     issue?: undefined;
-}
-    | {
-    /** 작성자가 본인인지 여부 (타인의 이슈를 발행 처리) */
+} | {
     isOwner: false;
-    /** 발행 처리할 이슈 데이터 (필수) */
-    issue: IssueInformation;
+    issue: IssueRequestDetailResponse;
 };
 
 export function CouponPublishPage() {
     const navigate = useNavigate();
     const showBottomMenu = useUIStore((s) => s.showBottomMenu);
-    const isLandScape = useIsLandscape();
+    const { issueId } = useParams<{ issueId: string }>();
+    const numericIssueId = issueId ? Number(issueId) : 0;
 
     const location = useLocation();
     const state = location.state as PublishLocationState | undefined;
@@ -43,12 +51,14 @@ export function CouponPublishPage() {
     const isOwner = state?.isOwner ?? true;
     const issue = state && "issue" in state ? state.issue : undefined;
 
+    const { mutate: approveIssue } = useApproveIssue();
+
     const [summary, setSummary] = useState("");
     const [createdAtText] = useState(() => formatDate(new Date()));
 
     // 발행 품목 및 수량 (부모에서 내려준 기본 메뉴 사용)
     const [items, setItems] = React.useState<IssueItem[]>(
-        isOwner ? [] : (issue?.menu ?? [])
+        isOwner ? [] : issue?.products ? mapProductsToIssueItems(issue.products) : []
     );
 
     React.useEffect(() => {
@@ -80,24 +90,72 @@ export function CouponPublishPage() {
                 {
                     id: "requester",
                     label: "요청자",
-                    value: issue.memberName ?? "-",
+                    value: issue.vendor.memberName ?? "-",
                 },
                 {
                     id: "phone",
                     label: "연락처",
-                    value: issue.phone ?? "-",
+                    value: issue.vendor.number ?? "-",
                 },
                 {
                     id: "date",
                     label: "요청일시",
-                    value: issue.date,
+                    value: issue.requestedAt,
                 },
             ]
             : [];
 
     const handleSubmit = () => {
-        // TODO: 실제 발행 API 연동 시 summary, createdAtText, items 등을 함께 전송
-        navigate("./issue");
+        if (!numericIssueId) return;
+
+        if (items.length === 0) {
+            alert("발행할 상품이 없습니다.");
+            return;
+        }
+
+        // 기본 검증: 기존 상품(isNew=false)은 productId가 반드시 있어야 함
+        for (const item of items) {
+            if (!item.isNew && (item.productId == null || Number.isNaN(item.productId))) {
+                alert("기존 상품을 선택한 경우 상품을 다시 선택해주세요.");
+                return;
+            }
+            if (item.isNew && !item.name.trim()) {
+                alert("신규 상품은 이름을 입력해야 합니다.");
+                return;
+            }
+            if (item.qty <= 0) {
+                alert("수량은 1개 이상이어야 합니다.");
+                return;
+            }
+        }
+
+        const mappedProducts: Product[] = mapIssueItemsToProducts(items);
+
+        approveIssue(
+            {
+                issueId: numericIssueId,
+                isApproved: true,
+                products: mappedProducts,
+            },
+            {
+                onSuccess: () => {
+                    alert("발행이 완료되었습니다.");
+                    navigate(`/issue/${numericIssueId}`, { replace: true });
+                },
+                onError: (error: ApiError) => {
+                    if (error.code === "ERR-AUTH") {
+                        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+                        navigate("/login");
+                    } else if (error.code === "ERR-IVD-VALUE") {
+                        alert("올바르지 않은 발행 기록입니다.");
+                    } else if (error.code === "ERR-ALREADY-DECIDED") {
+                        alert("이미 결정된 발행 요청입니다.");
+                    } else {
+                        alert(error.message ?? "발행 처리 중 오류가 발생했습니다.");
+                    }
+                },
+            }
+        );
     };
 
     if (!isOwner && !issue) {
@@ -134,7 +192,13 @@ export function CouponPublishPage() {
                     onAdd={() =>
                         setItems((prev) => [
                             ...prev,
-                            {id: crypto.randomUUID(), name: "", qty: 0},
+                            {
+                                id: crypto.randomUUID(),
+                                productId: undefined,
+                                isNew: true,
+                                name: "",
+                                qty: 0,
+                            },
                         ])
                     }
                     mode="edit"

@@ -5,10 +5,16 @@ import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {IconButton} from "../../../shared/ui/buttons/IconButton.tsx";
 import {Input} from "../../../shared/ui/input/Input.tsx";
 import type {IssueRequestDetailResponse} from "../api/getIssueRequestDetail.ts";
+import {useNavigate} from "react-router-dom";
+import {useRejectIssue} from "../model/useRejectIssue.ts";
+import type {ApiError} from "../../../shared/types/api.ts";
 
 export function IssueRequest({issue}: {issue: IssueRequestDetailResponse}) {
     const [openRejectForm, setOpenRejectForm] = useState<boolean>(false);
     const [rejectReason, setRejectReason] = useState<string>("");
+    const { mutate: rejectIssue } = useRejectIssue();
+
+    const navigate = useNavigate();
 
     const [menuItems, setMenuItems] = useState<IssueItem[]>([
         {id: "1", name: "오리지널 타코야끼", qty: 5},
@@ -48,34 +54,44 @@ export function IssueRequest({issue}: {issue: IssueRequestDetailResponse}) {
     ];
 
     const handleApprove = async () => {
-        if (!issue) return;
-
-        try {
-            // TODO: 실제 승인/발행 API로 교체
-            await fetch(`/api/issues/${issue.issueId}/approve`, {
-                method: "POST",
-            });
-            // 이후 상태 갱신 또는 페이지 이동 처리
-            // 예: setIssue({ ...issue, status: "ISSUE_STATUS/ISSUED" });
-        } catch (e) {
-            console.error("approve error", e);
-            // TODO: 에러 토스트 등 처리
-        }
+        navigate(`issue/${issue.issueId}/publish`, {
+            state: { isOwner: false , issue: issue}
+        })
     };
 
-    const handleReject = async () => {
-        if (!issue) return;
-
-        try {
-            // TODO: 실제 반려 API로 교체
-            await fetch(`/api/issues/${issue.issueId}/reject`, {
-                method: "POST",
-            });
-            // 예: setIssue({ ...issue, status: "ISSUE_STATUS/REJECTED" });
-        } catch (e) {
-            console.error("reject error", e);
+    const handleReject = () => {
+        if (!rejectReason.trim()) {
+            alert("반려 사유를 입력해주세요.");
+            return;
         }
+
+        rejectIssue(
+            {
+                issueId: issue.issueId,
+                isApproved: false,
+                reason: rejectReason,
+            },
+            {
+                onSuccess: () => {
+                    alert("반려 처리되었습니다.");
+                    navigate("/issue", { replace: true });
+                },
+                onError: (error: ApiError) => {
+                    if (error.code === "ERR-AUTH") {
+                        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+                        navigate("/login");
+                    } else if (error.code === "ERR-IVD-VALUE") {
+                        alert("올바르지 않은 발행 기록입니다.");
+                    } else if (error.code === "ERR-ALREADY-DECIDED") {
+                        alert("이미 결정된 발행 요청입니다.");
+                    } else {
+                        alert(error.message ?? "반려 처리 중 오류가 발생했습니다.");
+                    }
+                },
+            }
+        );
     };
+
 
     return (
         <div className="flex flex-col w-full gap-6">

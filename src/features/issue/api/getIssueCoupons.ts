@@ -1,5 +1,6 @@
 import {apiClient} from "../../../shared/lib/apiClient.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
+import type {Product} from "../model/productType.ts";
 
 export interface IssueCouponsApprovedInfo {
     requestedIssueCount: number;
@@ -15,6 +16,7 @@ export interface IssueCouponsApprovedInfo {
         partnerName: string;
         number: string;
     };
+    products: Product[];
     requestedAt: string; // "YYYY.MM.DD HH:MM:SS"
     decidedAt: string;
     expiredAt: string;

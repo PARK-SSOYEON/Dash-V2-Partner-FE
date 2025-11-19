@@ -112,7 +112,6 @@ export function IssueDetail() {
                 issueCoupons &&
                 !issueCoupons.isApproved && (
                     <CouponRejectHistory rejectInfo={issueCoupons.rejectInfo} />
-
                 )}
         </div>
     );

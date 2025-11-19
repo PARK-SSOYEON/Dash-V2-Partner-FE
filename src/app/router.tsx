@@ -39,6 +39,7 @@ export const router = createBrowserRouter([
             {path: "issue", element: <IssueRoute/>},
             {path: "issue/new", element: <CouponPublishRoute/>},
             {path: "issue/:id", element: <IssueDetailRoute/>},
+            {path: "issue/:id/publish", element: <CouponPublishRoute/>},
             {path: "notice", element: <NotificationRoute/>},
             {path: "settings", element: <SettingsRoute/>},
             {path: "settings/phone", element: <SettingPhoneRoute/>},

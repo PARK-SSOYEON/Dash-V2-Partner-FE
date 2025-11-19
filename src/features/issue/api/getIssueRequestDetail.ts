@@ -1,6 +1,7 @@
 import type {IssueStatusCode} from "../model/issueStatusType.ts";
 import {apiClient} from "../../../shared/lib/apiClient.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
+import type {Product} from "../model/productType.ts";
 
 export interface IssueRequestDetailResponse {
     issueId: number;
@@ -16,6 +17,7 @@ export interface IssueRequestDetailResponse {
         partnerName: string;
         number: string; // 대표번호
     };
+    products: Product[];
     requestedAt: string; // "YYYY.MM.DD HH:MM:SS"
 }
 
