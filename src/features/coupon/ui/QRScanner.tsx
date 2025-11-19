@@ -11,6 +11,7 @@ interface QRScannerProps {
 
 export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }) => {
     const scannerRef = useRef<Html5Qrcode | null>(null);
+    const hasStartedRef = useRef(false); 
     const [isScanned, setIsScanned] = useState(false);
 
     useEffect(() => {
