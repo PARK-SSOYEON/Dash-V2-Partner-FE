@@ -13,7 +13,7 @@ export default defineConfig({
             injectRegister: 'auto',     // 서비스 워커 등록 코드를 자동으로 주입
             // (1) 매니페스트 설정
             manifest: {
-                name: 'D:ASH',
+                name: 'D:ASH-partner',
                 short_name: 'D:ASH',
                 description: '소상공인 쿠폰 발급 서비스',
                 theme_color: '#ffffff',

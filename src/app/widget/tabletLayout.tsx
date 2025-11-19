@@ -8,8 +8,7 @@ export default function TabletLayout({children}: Props) {
             className="mx-auto bg-white"
             style={{
                 // 좌우 가터(브레이크포인트별 조정 가능)
-                ["--gutter" as any]: "1.5rem",
-                // 하단 네비게이션 바 높이(아이콘 24px 기준 52~56px 권장)
+                ["--gutter" as any]: "3rem",
                 ["--bottom-nav-h" as any]: "66px",
                 width: "100%",
                 maxWidth: "var(--container-max)",
@@ -20,7 +19,7 @@ export default function TabletLayout({children}: Props) {
                     minHeight: "100vh",
                     paddingInline: "var(--gutter)",
                     WebkitOverflowScrolling: "touch",
-                    paddingBottom: "calc(env(safe-area-inset-bottom) + var(--bottom-nav-h,66px) + var(--gutter,24px) + 1rem)",
+                    paddingBottom: "calc(env(safe-area-inset-bottom) + var(--bottom-nav-h,66px) + var(--gutter,24px))",
                 }}
             >
                 {children}

@@ -2,6 +2,8 @@ import React, {useState, useCallback} from 'react';
 import {QRScanner} from "./QRScanner.tsx";
 import {Icon} from "../../../shared/ui/Icon.tsx";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
+import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
+import {cn} from "../../../shared/lib/cn.ts";
 
 interface ProductData {
     couponId: number;
@@ -23,6 +25,8 @@ export const QRScanCard: React.FC = () => {
     const [step, setStep] = useState<Step>('SCAN');
     const [product, setProduct] = useState<ProductData | null>(null);
 
+    const isLandscape = useIsLandscape();
+
     React.useEffect(() => {
         if (step === 'COMPLETE') {
             const timer = setTimeout(() => {
@@ -42,9 +46,9 @@ export const QRScanCard: React.FC = () => {
         setProduct(mockProduct);
     }, []);
 
-    const handleUse= () => {
+    const handleUse = () => {
         setStep('COMPLETE');
-}
+    }
 
     const scanContent = (
         <div className="flex flex-col w-full items-center justify-center h-full p-6 text-center">
@@ -80,7 +84,9 @@ export const QRScanCard: React.FC = () => {
 
     return (
         <div
-            className={"flex flex-col gap-4 w-full min-h-[calc(100vh-var(--header-h,68px)-var(--bottom-nav-h,66px)-200px)]"}>
+            className={cn("flex flex-col gap-4 w-full ",
+                isLandscape ? "min-h-[calc(100vh-var(--header-h,68px)-150px)]" : "min-h-[calc(100vh-var(--header-h,68px)-var(--bottom-nav-h,66px)-200px)]"
+            )}>
             <div
                 className={"flex flex-1 flex-col pt-4 w-full h-full gap-4 rounded-3xl " +
                     "bg-white/80 backdrop-blur shadow-[0_0_4px_rgba(0,0,0,0.2)] items-center justify-center"}>
@@ -93,7 +99,7 @@ export const QRScanCard: React.FC = () => {
                         mode="mono"
                         icon={"leftChevron"}
                         iconPosition={"left"}
-                        onClick={()=>setProduct(null)}> 이전 </Button>
+                        onClick={() => setProduct(null)}> 이전 </Button>
                     <Button
                         mode="color_fill"
                         icon={"leftChevron"}

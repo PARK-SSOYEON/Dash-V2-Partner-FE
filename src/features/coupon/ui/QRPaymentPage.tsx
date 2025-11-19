@@ -18,7 +18,6 @@ export function QRPaymentPage() {
                         결제
                     </h1>
                 </div>
-
             </header>
 
             <div className="relative flex-1 w-full">

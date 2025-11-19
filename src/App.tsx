@@ -4,11 +4,16 @@ import {BottomMenu} from "./app/widget/BottomMenu.tsx";
 import {LoginBlob} from "./shared/ui/backgroud/LoginBlob.tsx";
 import {useUIStore} from "./shared/store/uiStore.ts";
 import TabletLayout from "./app/widget/tabletLayout.tsx";
+import {useIsLandscape} from "./shared/hook/useIsLandscape.ts";
+import QRPaymentRoute from "./app/routes/QRPayment.tsx";
+
 
 function App() {
     const location = useLocation();
     const isLogin = location.pathname === "/login";
     const isSign = location.pathname === "/sign";
+
+    const isLandscape = useIsLandscape();
 
     const bottomMenuVisible = useUIStore((s) => s.bottomMenuVisible);
 
@@ -43,11 +48,24 @@ function App() {
                 </>
             )}
 
-            <TabletLayout>
-                <Outlet/>
-            </TabletLayout>
+            {!(isLogin || isSign) && (
+                <TabletLayout>
+                    {isLandscape ? (
+                        <div className="flex h-full gap-16 pt-8">
+                            <div className="w-2/3">
+                                <Outlet/>
+                            </div>
+                            <div className="w-1/3">
+                                <QRPaymentRoute/>
+                            </div>
+                        </div>
+                    ) : (
+                        <Outlet/>
+                    )}
+                </TabletLayout>
+            )}
 
-            <BottomMenu visible={bottomMenuVisible}/>
+            < BottomMenu visible={bottomMenuVisible}/>
         </>
     )
 }

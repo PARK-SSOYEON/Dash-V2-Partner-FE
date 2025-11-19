@@ -2,6 +2,8 @@ import * as React from "react";
 import {NavLink, useLocation} from "react-router-dom";
 import type {IconName} from "../../shared/ui/icons/IconRegistry.ts";
 import {Icon} from "../../shared/ui/Icon.tsx";
+import {useIsLandscape} from "../../shared/hook/useIsLandscape.ts";
+import {cn} from "../../shared/lib/cn.ts";
 
 type Item = {
     to: string;
@@ -29,15 +31,22 @@ export const BottomMenu = React.memo(function BottomMenu({visible=true}: BottomM
     const showIndicator = highlightIndex >= 0;
     const isPressed = pressedIndex !== -1;
 
+    const isLandScape = useIsLandscape();
+
     return (
         <nav
-            className={"fixed left-1/2 -translate-x-1/2 rounded-full bg-white/60 supports-[backdrop-filter]:bg-white/50 backdrop-blur-md shadow-[0_0_2px_rgba(0,0,0,0.25)] z-[100] px-4 pointer-events-none"+
-                "transition-transform duration-300 ease-out " +
-                (visible ? " translate-y-0 " : " translate-y-[150%] ")
-            }
+            className={cn("fixed left-1/2 -translate-x-1/2 rounded-full bg-white/60 z-[100] px-4 ",
+                "supports-[backdrop-filter]:bg-white/50 backdrop-blur-md shadow-[0_0_2px_rgba(0,0,0,0.25)] pointer-events-none",
+                "transition-transform duration-300 ease-out ",
+                (visible ? " translate-y-0 " : " translate-y-[150%] "),
+                (isLandScape ? "" : "")
+            )}
             style={{
-                width: "min(calc(100vw - (var(--gutter,24px) * 2)), calc(var(--container-max,450px) - (var(--gutter,24px) * 2)))",
-                bottom: "max(1.5rem, env(safe-area-inset-bottom))",
+                width: isLandScape
+                    ? "calc(((100vw * 2 / 3) - (var(--gutter,48px) * 2))*0.7)"
+                    : "calc((100vw - (var(--gutter,48px) * 2))*0.7)",
+                left: isLandScape ? "33.3333vw" : "50%",
+                bottom: "max(2rem, env(safe-area-inset-bottom))",
                 height: "var(--bottom-nav-h,66px)",
             }}
         >
