@@ -16,7 +16,7 @@ export default function TabletLayout({children, isLandscape}: Props) {
         >
             <main
                 style={{
-                    minHeight: "100vh",
+                    height: "100vh",
                     paddingInline: "var(--gutter)",
                     paddingBottom: isLandscape
                         ? 0

@@ -49,24 +49,27 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
         };
 
         console.log("📌 [QRScanner] calling html5QrCode.start()");
-
-        html5QrCode
-            .start(
-                { facingMode: "user" }, // 후면 카메라: environmen t
-                config,
-                (decodedText: string) => {
-                    console.log("📌 [QRScanner] scan success:", decodedText);
-                    setIsScanned(true);
-                    onScanSuccess(decodedText);
-                },
-                () => {}
-            )
-            .then(() => {
-                console.log("📌 [QRScanner] html5QrCode.start() resolved");
-            })
-            .catch((err) => {
-                console.error("❌ [QRScanner] html5QrCode.start() failed:", err);
-            });
+        
+        const startScanner = () => {
+            console.log("📌 [QRScanner] calling html5QrCode.start() after delay");
+            html5QrCode
+                .start(
+                    { facingMode: "user" }, // 후면 카메라: environmen t
+                    config,
+                    (decodedText: string) => {
+                        console.log("📌 [QRScanner] scan success:", decodedText);
+                        setIsScanned(true);
+                        onScanSuccess(decodedText);
+                    },
+                    () => {}
+                )
+                .then(() => {
+                    console.log("📌 [QRScanner] html5QrCode.start() resolved");
+                })
+                .catch((err) => {
+                    console.error("❌ [QRScanner] html5QrCode.start() failed:", err);
+                });
+        };
 
         // 디버깅용: DOM에 뭐가 들어갔는지 확인
         setTimeout(() => {
@@ -90,8 +93,11 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             );
         }, 1000);
 
+        const timer = setTimeout(startScanner, 100);
+
         return () => {
             console.log("📌 [QRScanner] cleanup");
+            clearTimeout(timer);
 
             if (!scannerRef.current) return;
 
