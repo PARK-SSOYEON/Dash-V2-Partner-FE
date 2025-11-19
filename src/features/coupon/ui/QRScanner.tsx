@@ -42,11 +42,15 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         const config = {
             fps: 10,
-            qrbox: { width: 320, height: 450 },
+            qrbox: { width: 320, height: 320 },
             formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
             experimentalFeatures: {
                 useBarCodeDetectorIfSupported: false,
             },
+            videoConstraints: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+            }
         };
 
         console.log("📌 [QRScanner] calling html5QrCode.start()");
@@ -126,7 +130,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
         <div className="flex flex-col items-center justify-center space-y-2 bg-white">
             <div
                 className="relative"
-                style={{width: 320, height: 450}}
+                style={{width: 320, height: 320}}
             >
                 <div
                     id={scannerId}
