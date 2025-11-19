@@ -41,7 +41,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
         scannerRef.current = html5QrCode;
 
         const config = {
-            fps: 10,
+            fps: 7,
             qrbox: { width: 320, height: 320 },
             formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
             experimentalFeatures: {
@@ -49,7 +49,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             },
             videoConstraints: {
                 facingMode: { exact: "environment" },
-                aspectRatio: { ideal: 1.777 }
+                aspectRatio: { ideal: 1.333 }
             },
         };
 
