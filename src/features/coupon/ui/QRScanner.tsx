@@ -59,7 +59,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             console.log("📌 [QRScanner] calling html5QrCode.start() after delay");
             html5QrCode
                 .start(
-                    { facingMode: "user" }, // 후면 카메라: environmen t
+                    { facingMode: "environment" }, // 후면 카메라: environment
                     config,
                     (decodedText: string) => {
                         console.log("📌 [QRScanner] scan success:", decodedText);
