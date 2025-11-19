@@ -25,7 +25,7 @@ export interface RegisterPartnerResponse {
  */
 export async function registerPartner(body: RegisterPartnerBody): Promise<RegisterPartnerResponse> {
     try {
-        const res = await apiClient.post<RegisterPartnerResponse>("/auth/join/member", body);
+        const res = await apiClient.post<RegisterPartnerResponse>("/auth/join/partner", body);
         return res.data;
     } catch (err) {
         if (axios.isAxiosError(err)) {
