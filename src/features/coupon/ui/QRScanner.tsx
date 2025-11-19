@@ -50,7 +50,8 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             videoConstraints: {
                 width: { ideal: 1280 },
                 height: { ideal: 720 },
-            }
+            },
+            facingMode: { ideal: "environment" }
         };
 
         console.log("📌 [QRScanner] calling html5QrCode.start()");
@@ -59,7 +60,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             console.log("📌 [QRScanner] calling html5QrCode.start() after delay");
             html5QrCode
                 .start(
-                    { facingMode: "environment" }, // 후면 카메라: environment
+                    { facingMode: { exact: "environment" } },
                     config,
                     (decodedText: string) => {
                         console.log("📌 [QRScanner] scan success:", decodedText);
