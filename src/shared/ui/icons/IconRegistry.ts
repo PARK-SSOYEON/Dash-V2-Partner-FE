@@ -21,6 +21,7 @@ import {IcWarning} from "./IcWarning.tsx";
 import {IcUsedCoupon} from "./IcUsedCoupon.tsx";
 import {IcCamera} from "./IcCamera.tsx";
 import {IcCredit} from "./IcCredit.tsx";
+import {IcConfirm} from "./IcConfirm.tsx";
 
 export const IconRegistry = {
     identify: IcIdentify,
@@ -45,7 +46,8 @@ export const IconRegistry = {
     lock: IcLock,
     warning: IcWarning,
     camera: IcCamera,
-    credit: IcCredit
+    credit: IcCredit,
+    confirm: IcConfirm,
 }
 
 export type IconName = keyof typeof IconRegistry

@@ -2,29 +2,29 @@ import {DetailBox, type DetailItem} from "../../../shared/ui/DetailBox.tsx";
 import {type IssueItem, MenuInput} from "../../../shared/ui/MenuInput.tsx";
 import * as React from "react";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
+import type {IssueCouponsApprovedInfo} from "../api/getIssueCoupons.ts";
 
-export function CouponHistory() {
-
-    const basicItems: DetailItem[] = [
+export function CouponHistory({issueInfo}: {issueInfo: IssueCouponsApprovedInfo}) {
+    const items: DetailItem[] = [
         {
             id: "publish_date",
             label: "일시",
-            value: "2025.11.08. 23:30:15",
+            value: issueInfo.decidedAt,
         },
         {
             id: "request_count",
             label: "요청 발행매수",
-            value: "25장",
+            value: `${issueInfo.requestedIssueCount}장`,
         },
         {
             id: "total_count",
             label: "전체 발행매수",
-            value: "25장",
+            value: `${issueInfo.approvedIssueCount}장`,
         },
         {
-            id: "val_date",
+            id: "valid_days",
             label: "유효기간",
-            value: "발행일로부터 30일"
+            value: `발행일로부터 ${issueInfo.validDays}일`,
         },
     ];
 
@@ -38,12 +38,12 @@ export function CouponHistory() {
     return (
         <div className="flex flex-col w-full gap-6">
             <div className="flex flex-col w-full text-xl font-bold gap-4">
-                기본 정보
-                <DetailBox items={basicItems}/>
+                발행 정보
+                <DetailBox items={items}/>
             </div>
 
             <div className="flex flex-col w-full text-xl font-bold gap-4">
-                발행품목 및 수량
+                상세 발행내역
                 <MenuInput
                     items={menuItems}
                     onChange={setMenuItems}

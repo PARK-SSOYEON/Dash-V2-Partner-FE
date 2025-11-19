@@ -6,33 +6,20 @@ import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {useUIStore} from "../../../shared/store/uiStore.ts";
 import {useNavigate} from "react-router-dom";
 import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
-
-// TODO - status back에 맞춰 수정
-export type IssueStatus = "WAITING" | "PAYMENT_PENDING" | "PUBLISHED" | "REJECTED" | "DISTRIBUTED" | "USED";
-
-export interface IssueSummary {
-    id: string;
-    title: string;
-    itemCount: number; // 품목 개수
-    status: IssueStatus;
-}
-
-// 서버 status 값을 실제 화면에 보여줄 라벨로 변환하는 맵핑
-const ISSUE_STATUS_LABEL: Record<IssueStatus, string> = {
-    WAITING: "대기중",
-    PAYMENT_PENDING: "결제대기",
-    PUBLISHED: "발행",
-    REJECTED: "반려",
-    DISTRIBUTED: "배부",
-    USED: "사용완료"
-};
+import {ISSUE_STATUS_LABEL, type IssueStatusCode} from "../model/issueStatusType";
+import {useIssueListQuery} from "../model/useIssueListQuery.ts";
+import {useDeleteIssuesMutation} from "../model/useDeleteIssuesMutation.ts";
+import type {ApiError} from "../../../shared/types/api.ts";
+import {queryClient} from "../../../shared/lib/queryClient.ts";
 
 export function IssueListPage() {
     const navigate = useNavigate();
     const isLandScape = useIsLandscape();
 
-    const [issues, setIssues] = React.useState<IssueSummary[]>([]);
-    const [statusFilter, setStatusFilter] = React.useState<IssueStatus | "ALL">("ALL");
+    const [statusFilter] =
+        React.useState<IssueStatusCode | "ALL">("ALL");
+    const { mutate: deleteIssuesMutate } = useDeleteIssuesMutation();
+
     const [selectMode, setSelectMode] = React.useState(false);
     const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
@@ -47,11 +34,11 @@ export function IssueListPage() {
         }
     }, [selectMode, hideBottomMenu, showBottomMenu]);
 
-    // TODO: 추후 여기에서 서버 요청으로 교체
-    React.useEffect(() => {
-        setIssues(MOCK_ISSUES);
-        setStatusFilter("ALL")
-    }, []);
+    const { data } = useIssueListQuery({
+        status: statusFilter === "ALL" ? undefined : statusFilter,
+    });
+
+    const issues = data?.items ?? [];
 
     const handleClickIssue = (issueId: string) => {
         if (selectMode) {
@@ -68,13 +55,48 @@ export function IssueListPage() {
     };
 
     const handleClickCreate = () => {
-        navigate('./new')
+        navigate('./new', {
+            state: { isOwner: true }
+        });
     };
 
     const filteredIssues =
         statusFilter === "ALL"
             ? issues
             : issues.filter((issue) => issue.status === statusFilter);
+
+    const handleDelete = () => {
+        if (selectedIds.length === 0) return;
+
+        // requestId 배열을 number[]로 변환
+        const requestIds = selectedIds.map((id) => Number(id));
+
+        deleteIssuesMutate(
+            { issues: requestIds },
+            {
+                onSuccess: () => {
+                    alert("삭제되었습니다.");
+
+                    // 선택모드 종료 + 리스트 갱신
+                    setSelectMode(false);
+                    setSelectedIds([]);
+
+                    // React Query 캐시 리로드
+                    queryClient.invalidateQueries({ queryKey: ["issues"] });
+                },
+                onError: (error: ApiError) => {
+                    if (error.code === "ERR-NOT-YOURS") {
+                        alert("삭제할 수 없는 이슈가 포함되어 있습니다.");
+                    } else if (error.code === "ERR-AUTH") {
+                        alert("로그인 정보가 만료되었습니다.\n다시 로그인해주세요.");
+                        navigate("/login");
+                    } else {
+                        alert(error.message ?? "삭제 중 오류가 발생했습니다.");
+                    }
+                },
+            }
+        );
+    };
 
     return (
         <div className="flex flex-col pt-4 w-full gap-3">
@@ -121,12 +143,12 @@ export function IssueListPage() {
             <section className="space-y-3">
                 {filteredIssues.map((issue) => (
                     <CouponRequestBlock
-                        key={issue.id}
+                        key={issue.requestId}
                         mode={selectMode ? "select" : "normal"}
-                        selected={selectedIds.includes(issue.id)}
-                        onClick={() => handleClickIssue(issue.id)}
+                        selected={selectedIds.includes(String(issue.requestId))}
+                        onClick={() => handleClickIssue(String(issue.requestId))}
                         title={issue.title}
-                        itemCount={issue.itemCount}
+                        itemCount={issue.productKindCount}
                         statusLabel={ISSUE_STATUS_LABEL[issue.status]}
                     />
                 ))}
@@ -152,60 +174,9 @@ export function IssueListPage() {
                         bottom: "max(2rem, env(safe-area-inset-bottom))",
                         height: "var(--bottom-nav-h,66px)",
                     }}
+                    onClick={handleDelete}
                 > 삭제하기 </Button>
             )}
         </div>
     );
 }
-
-
-const MOCK_ISSUES: IssueSummary[] = [
-    {
-        id: "1",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "WAITING",
-    },
-    {
-        id: "2",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "PAYMENT_PENDING",
-    },
-    {
-        id: "3",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "PUBLISHED",
-    },
-    {
-        id: "4",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "REJECTED",
-    },
-    {
-        id: "8",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "REJECTED",
-    },
-    {
-        id: "5",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "REJECTED",
-    },
-    {
-        id: "6",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "REJECTED",
-    },
-    {
-        id: "7",
-        title: "신입생 간식사업",
-        itemCount: 5,
-        status: "REJECTED",
-    },
-];

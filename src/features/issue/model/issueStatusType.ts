@@ -1,0 +1,16 @@
+export type IssueStatusCode =
+    | "ISSUE_STATUS/PENDING"
+    | "ISSUE_STATUS/PAYMENT_READY"
+    | "ISSUE_STATUS/ISSUED"
+    | "ISSUE_STATUS/REJECTED"
+    | "ISSUE_STATUS/SHARED"
+    | "ISSUE_STATUS/COMPLETED";
+
+export const ISSUE_STATUS_LABEL: Record<IssueStatusCode, string> = {
+    "ISSUE_STATUS/PENDING": "대기중",
+    "ISSUE_STATUS/PAYMENT_READY": "결제대기",
+    "ISSUE_STATUS/ISSUED": "발행",
+    "ISSUE_STATUS/REJECTED": "반려",
+    "ISSUE_STATUS/SHARED": "배부",
+    "ISSUE_STATUS/COMPLETED": "사용완료",
+};

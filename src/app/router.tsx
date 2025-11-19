@@ -4,13 +4,13 @@ import App from "../App.tsx";
 import LoginRoute from "./routes/Login";
 import SignRoute from "./routes/Sign.tsx";
 import IssueRoute from "./routes/Issue.tsx";
-import IssueCreateRoute from "./routes/NewIssue.tsx";
 import IssueDetailRoute from "./routes/IssueDetailView.tsx";
 import SettingsRoute from "./routes/Settings.tsx";
 import SettingPhoneRoute from "./routes/SettingPhone.tsx";
 import NotificationRoute from "./routes/Notification.tsx";
 import {PublicRoute} from "./routes/PublicRoute.tsx";
 import CouponWrappertRoute from "./routes/CouponWrapper.tsx";
+import CouponPublishRoute from "./routes/CouponPublish.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
             },
             {path: "coupon", element: <CouponWrappertRoute/>},
             {path: "issue", element: <IssueRoute/>},
-            {path: "issue/new", element: <IssueCreateRoute/>},
+            {path: "issue/new", element: <CouponPublishRoute/>},
             {path: "issue/:id", element: <IssueDetailRoute/>},
             {path: "notice", element: <NotificationRoute/>},
             {path: "settings", element: <SettingsRoute/>},

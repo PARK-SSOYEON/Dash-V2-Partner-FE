@@ -62,7 +62,7 @@ export const DetailBox: React.FC<DetailBoxProps> = ({
                             <div className="whitespace-nowrap font-medium text-base text-black">
                                 {item.label}
                             </div>
-                            <div className="text-black font-light text-base leading-relaxed break-words">
+                            <div className="text-black w-full font-light text-base leading-relaxed break-words">
                                 {isEditable ? (
                                     <textarea
                                         value={item.value as string}
