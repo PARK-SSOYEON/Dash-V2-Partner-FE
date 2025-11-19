@@ -109,7 +109,7 @@ export function LoginForm() {
 
         finalizePinLogin(
             {
-                phone: phone.replace(/\D/g, ""),
+                phoneNumber: phone.replace(/\D/g, ""),
                 pin
             },
             {

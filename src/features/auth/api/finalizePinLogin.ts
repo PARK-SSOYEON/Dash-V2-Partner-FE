@@ -4,7 +4,7 @@ import type {ApiError} from "../../../shared/types/api.ts";
 import {hashPin} from "../lib/hashPin.ts";
 
 export interface FinalizePinLoginBody {
-    phone: string;
+    phoneNumber: string;
     pin: string;
 }
 
@@ -24,7 +24,7 @@ export async function finalizePinLoginApi(body: FinalizePinLoginBody): Promise<F
 
         const res = await apiClient.post<FinalizePinLoginResponse>(
             "/auth/login/pin",
-            {phone: body.phone, pin: hashedPin }
+            {phoneNumber: body.phoneNumber, pin: hashedPin }
         );
         return res.data;
     } catch (err) {
