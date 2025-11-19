@@ -11,6 +11,7 @@ import type {IssueRequestDetailResponse} from "../api/getIssueRequestDetail.ts";
 import type {Product} from "../model/productType.ts";
 import {useApproveIssue} from "../model/useApproveIssue.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
+import {useCreateSelfIssue} from "../model/useCreateSelfIssue.ts";
 
 const mapProductsToIssueItems = (products: Product[]): IssueItem[] =>
     products.map((p) => ({
@@ -54,6 +55,7 @@ export function CouponPublishPage() {
     const partnerId = issue?.partner?.partnerId ? String(issue.partner.partnerId) : "";
 
     const { mutate: approveIssue } = useApproveIssue();
+    const { mutate: createSelfIssueMutate } = useCreateSelfIssue();
 
     const [summary, setSummary] = useState("");
     const [createdAtText] = useState(() => formatDate(new Date()));
@@ -160,6 +162,63 @@ export function CouponPublishPage() {
         );
     };
 
+   const handleCreate = () => {
+        const trimmedTitle = summary.trim();
+
+        if (!trimmedTitle) {
+            alert("발행 적요를 입력해주세요.");
+            return;
+        }
+
+        if (items.length === 0) {
+            alert("발행할 상품이 없습니다.");
+            return;
+        }
+
+        // 기본 검증: 기존 상품(isNew=false)은 productId가 반드시 있어야 함
+        for (const item of items) {
+            if (!item.isNew && (item.productId == null || Number.isNaN(item.productId))) {
+                alert("기존 상품을 선택한 경우 상품을 다시 선택해주세요.");
+                return;
+            }
+            if (item.isNew && !item.name.trim()) {
+                alert("신규 상품은 이름을 입력해야 합니다.");
+                return;
+            }
+            if (item.qty <= 0) {
+                alert("수량은 1개 이상이어야 합니다.");
+                return;
+            }
+        }
+
+        const mappedProducts: Product[] = mapIssueItemsToProducts(items);
+
+        createSelfIssueMutate(
+            {
+                title: trimmedTitle,
+                products: mappedProducts,
+            },
+            {
+                onSuccess: () => {
+                    alert("쿠폰이 발행되었습니다.");
+                    navigate("/issue", { replace: true });
+                },
+                onError: (error: ApiError) => {
+                    if (error.code === "ERR-AUTH") {
+                        alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+                        navigate("/login");
+                    } else if (error.code === "ERR-IVD-VALUE") {
+                        alert("올바르지 않은 발행 요청입니다.");
+                    } else if (error.code === "ERR-ALREADY-DECIDED") {
+                        alert("이미 결정된 발행입니다.");
+                    } else {
+                        alert(error.message ?? "쿠폰 발행 중 오류가 발생했습니다.");
+                    }
+                },
+            }
+        );
+    }
+
     if (!isOwner && !issue) {
         return (
             <div className="p-4 text-red-600">
@@ -215,7 +274,7 @@ export function CouponPublishPage() {
                     <span className="font-normal text-base text-(--color-gray-400) text-center">
                       위 정보로 쿠폰을 발행합니다
                     </span>
-                    <Button mode="blue_line" onClick={handleSubmit}>
+                    <Button mode="blue_line" onClick={isOwner? handleCreate :handleSubmit}>
                         쿠폰 발행
                     </Button>
                 </div>
