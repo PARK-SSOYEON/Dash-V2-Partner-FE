@@ -5,6 +5,9 @@ import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
 import {cn} from "../../../shared/lib/cn.ts";
 import {usePaymentTransaction} from "../model/usePaymentTransaction.ts";
+import {useNavigate} from "react-router-dom";
+import {useConfirmPaymentTransaction} from "../model/useConfirmPaymentTransaction.ts";
+import type {ApiError} from "../../../shared/types/api.ts";
 
 interface ProductData {
     couponId: number;
@@ -18,16 +21,20 @@ type Step = 'SCAN' | 'COMPLETE';
 export const QRScanCard: React.FC = () => {
     const [step, setStep] = useState<Step>('SCAN');
     const [product, setProduct] = useState<ProductData | null>(null);
+    const [code, setCode] = useState<string | null>(null);
 
     const isLandscape = useIsLandscape();
     const [isError, setIsError] = useState(false);
     const paymentTx = usePaymentTransaction();
+    const confirmTx = useConfirmPaymentTransaction();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         if (step === 'COMPLETE') {
             const timer = setTimeout(() => {
                 setStep('SCAN');
                 setProduct(null);
+                setCode(null);
             }, 3000);
             return () => clearTimeout(timer);
         }
@@ -37,6 +44,8 @@ export const QRScanCard: React.FC = () => {
 
     const handleScanSuccess = useCallback((decodedText: string) => {
         console.log("QR Code Scanned:", decodedText);
+        setCode(decodedText);
+        setIsError(false);
 
         paymentTx.mutate(decodedText, {
             onSuccess: (data) => {
@@ -48,6 +57,7 @@ export const QRScanCard: React.FC = () => {
                 });
             },
             onError: () => {
+                setProduct(null);
                 setIsError(true);
 
                 setTimeout(() => {
@@ -58,8 +68,30 @@ export const QRScanCard: React.FC = () => {
     }, []);
 
     const handleUse = () => {
-        setStep('COMPLETE');
-    }
+        if (!product || !code) return;
+
+        confirmTx.mutate(code, {
+            onSuccess: () => {
+                setStep('COMPLETE');
+            },
+            onError: (error: ApiError) => {
+                if (error.code === "ERR-AUTH") {
+                    alert("로그인이 필요합니다. 다시 로그인해주세요.");
+                    navigate("/login");
+                    return;
+                }
+
+                setIsError(true);
+
+                setTimeout(() => {
+                    setIsError(false);
+                    setProduct(null);
+                    setCode(null);
+                    setStep("SCAN");
+                }, 2000);
+            },
+        });
+    };
 
     const scanContent = (
         <div className="flex flex-col w-full items-center justify-center h-full p-6 text-center">
