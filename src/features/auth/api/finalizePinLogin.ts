@@ -10,7 +10,7 @@ export interface FinalizePinLoginBody {
 
 export interface FinalizePinLoginResponse {
     accessToken: string;
-    name?: string | null;
+    userName?: string | null;
 }
 
 /**

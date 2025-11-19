@@ -115,7 +115,7 @@ export function LoginForm() {
             {
             onSuccess: (loginData) => {
                 setAccessToken(loginData.accessToken);
-                setUserName(loginData.name ?? null);
+                setUserName(loginData.userName ?? null);
                 setStep("done");
             },
             onError: (error: ApiError) => {
