@@ -50,8 +50,8 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             videoConstraints: {
                 width: { ideal: 1280 },
                 height: { ideal: 720 },
+                facingMode: { exact: "environment" }
             },
-            facingMode: { ideal: "environment" }
         };
 
         console.log("📌 [QRScanner] calling html5QrCode.start()");
