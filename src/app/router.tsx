@@ -10,7 +10,7 @@ import SettingsRoute from "./routes/Settings.tsx";
 import SettingPhoneRoute from "./routes/SettingPhone.tsx";
 import NotificationRoute from "./routes/Notification.tsx";
 import {PublicRoute} from "./routes/PublicRoute.tsx";
-import QRPaymentRoute from "./routes/QRPayment.tsx";
+import CouponWrappertRoute from "./routes/CouponWrapper.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
                     </PublicRoute>
                 )
             },
-            {path: "coupon", element: <QRPaymentRoute/>},
+            {path: "coupon", element: <CouponWrappertRoute/>},
             {path: "issue", element: <IssueRoute/>},
             {path: "issue/new", element: <IssueCreateRoute/>},
             {path: "issue/:id", element: <IssueDetailRoute/>},

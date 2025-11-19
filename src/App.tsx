@@ -19,6 +19,13 @@ function App() {
 
     return (
         <>
+            <style>
+                {`
+                  .no-scrollbar::-webkit-scrollbar {
+                      display: none;
+                  }
+                `}
+            </style>
             {(isLogin || isSign) && (
                 <>
                     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -49,13 +56,23 @@ function App() {
             )}
 
             {!(isLogin || isSign) && (
-                <TabletLayout>
+                <TabletLayout isLandscape={isLandscape}>
                     {isLandscape ? (
-                        <div className="flex h-full gap-16 pt-8">
-                            <div className="w-2/3">
+                        <div className="flex gap-16 pt-8 h-screen">
+                            <div
+                                className="w-2/3 no-scrollbar"
+                                style={{
+                                    overflowY: "auto",
+                                    WebkitOverflowScrolling: "touch",
+                                    paddingBottom:
+                                        "calc(env(safe-area-inset-bottom) + var(--bottom-nav-h,66px) + var(--gutter,24px))",
+                                    scrollbarWidth: "none",
+                                    msOverflowStyle: "none",
+                                }}
+                            >
                                 <Outlet/>
                             </div>
-                            <div className="w-1/3">
+                            <div className="w-1/3 flex-shrink-0">
                                 <QRPaymentRoute/>
                             </div>
                         </div>

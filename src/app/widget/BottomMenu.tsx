@@ -45,7 +45,7 @@ export const BottomMenu = React.memo(function BottomMenu({visible=true}: BottomM
                 width: isLandScape
                     ? "calc(((100vw * 2 / 3) - (var(--gutter,48px) * 2))*0.7)"
                     : "calc((100vw - (var(--gutter,48px) * 2))*0.7)",
-                left: isLandScape ? "33.3333vw" : "50%",
+                left: isLandScape ? "33vw" : "50%",
                 bottom: "max(2rem, env(safe-area-inset-bottom))",
                 height: "var(--bottom-nav-h,66px)",
             }}

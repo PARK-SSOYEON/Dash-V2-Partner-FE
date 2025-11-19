@@ -1,8 +1,8 @@
 import * as React from "react";
 
-type Props = { children: React.ReactNode };
+type Props = { children: React.ReactNode; isLandscape?: boolean };
 
-export default function TabletLayout({children}: Props) {
+export default function TabletLayout({children, isLandscape}: Props) {
     return (
         <div
             className="mx-auto bg-white"
@@ -18,8 +18,10 @@ export default function TabletLayout({children}: Props) {
                 style={{
                     minHeight: "100vh",
                     paddingInline: "var(--gutter)",
-                    WebkitOverflowScrolling: "touch",
-                    paddingBottom: "calc(env(safe-area-inset-bottom) + var(--bottom-nav-h,66px) + var(--gutter,24px))",
+                    paddingBottom: isLandscape
+                        ? 0
+                        : "calc(env(safe-area-inset-bottom) + var(--bottom-nav-h,66px) + var(--gutter,24px))",
+                    overflowY: isLandscape ? "hidden" : "auto",
                 }}
             >
                 {children}
