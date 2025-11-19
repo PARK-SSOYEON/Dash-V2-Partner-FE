@@ -8,8 +8,7 @@ export function MypageSection() {
         {
             title: "회원정보 수정",
             items: [
-                {label: "전화번호 변경", enabled: true, link: './phone'},
-                {label: "소속 수정", enabled: true, link: './affiliation'},
+                {label: "전화번호 추가", enabled: true, link: './phone'},
             ],
         },
         {

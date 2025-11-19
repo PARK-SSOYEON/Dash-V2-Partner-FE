@@ -2,10 +2,10 @@ import * as React from "react";
 
 type Props = { children: React.ReactNode };
 
-export default function Layout({children}: Props) {
+export default function MobileLayout({children}: Props) {
     return (
         <div
-            className="mx-auto bg-(--color-gray-50)"
+            className="mx-auto bg-white"
             style={{
                 // 앱 전체 최대 폭(디자인 기준 가로 폭)
                 ["--container-max" as any]: "450px",

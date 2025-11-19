@@ -39,7 +39,7 @@ export function SettingPhoneForm() {
     };
 
     const stepMessages: Record<IssueStep, string> = {
-        "phone": "변경할 전화번호를 \n 입력해주세요",
+        "phone": "추가할 전화번호를 \n 입력해주세요",
         "otp": "보내드린 인증번호를 \n 입력해주세요",
     };
 

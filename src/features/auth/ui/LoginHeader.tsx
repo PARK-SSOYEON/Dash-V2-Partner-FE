@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export type HeaderStep = "default" | "otp";
+export type HeaderStep = "default" | "otp" | "pin";
 
 const TEXTS: Record<
     HeaderStep,
@@ -10,19 +10,21 @@ const TEXTS: Record<
         bottom?: string;
     }> = {
     "default": {top: "쿠폰관리,", middle: "이제 간단히"},
-    "otp": {middle: "로그인을 위한", bottom: "인증번호 입력"},
+    "otp": {middle: "회원가입을 위한", bottom: "인증번호 입력"},
+    "pin": {middle: "로그인을 위한", bottom: "PIN 입력"}
 };
 
 const DASH_POSITION: Record<HeaderStep, "top" | "bottom"> = {
     "default": "bottom",
     "otp": "top",
+    "pin": "top"
 };
 
 export interface LoginHeaderProps {
     step: HeaderStep;
 }
 
-export function LoginHeader({ step }: LoginHeaderProps) {
+export function LoginHeader({step}: LoginHeaderProps) {
     const {top, middle, bottom} = TEXTS[step];
 
     const [topText, setTopText] = React.useState(top);
@@ -130,6 +132,9 @@ export function LoginHeader({ step }: LoginHeaderProps) {
                 }}
             >
                 D:ASH
+                <span className="ml-2 px-3 py-1 rounded-full bg-(--color-blue-500) text-white font-bold text-sm">
+                    partner
+                </span>
             </div>
         </div>
     );

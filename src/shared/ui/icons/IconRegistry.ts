@@ -18,6 +18,9 @@ import {IcCheck} from "./IcCheck.tsx";
 import {IcList} from "./IcList.tsx";
 import {IcLock} from "./IcLock.tsx";
 import {IcWarning} from "./IcWarning.tsx";
+import {IcUsedCoupon} from "./IcUsedCoupon.tsx";
+import {IcCamera} from "./IcCamera.tsx";
+import {IcCredit} from "./IcCredit.tsx";
 
 export const IconRegistry = {
     identify: IcIdentify,
@@ -29,6 +32,7 @@ export const IconRegistry = {
     leftChevron: IcLeftChevron,
     trashcan: IcTrashcan,
     coupon: IcCoupon,
+    usedCoupon: IcUsedCoupon,
     issue: IcIssue,
     notification: IcNotification,
     profile: IcProfile,
@@ -39,7 +43,9 @@ export const IconRegistry = {
     addCoupon: IcAddCoupon,
     check: IcCheck,
     lock: IcLock,
-    warning: IcWarning
+    warning: IcWarning,
+    camera: IcCamera,
+    credit: IcCredit
 }
 
 export type IconName = keyof typeof IconRegistry

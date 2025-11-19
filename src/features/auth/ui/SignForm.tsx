@@ -3,14 +3,11 @@ import {cva} from "class-variance-authority";
 import {SignHeader} from "./SignHeader.tsx";
 import {InputGroup} from "../../../shared/ui/input/InputGroup.tsx";
 import {cn} from "../../../shared/lib/cn.ts";
-import {MultiDropdownSelector} from "../../../shared/ui/dropdown/MultiDropdownSelector.tsx";
-import {IconButton} from "../../../shared/ui/buttons/IconButton.tsx";
 import {useUIStore} from "../../../shared/store/uiStore.ts";
-import {useRegisterMember} from "../model/useRegisterMember.ts";
+import {useRegisterPartner} from "../model/useRegisterPartner.ts";
 import {useAuthStore} from "../../../shared/store/authStore.ts";
 import {useNavigate} from "react-router-dom";
 import type {ApiError} from "../../../shared/types/api.ts";
-import {formatBirthInput, isValidBirthDate} from "../lib/birth.ts";
 
 type QuestionId = 1 | 2 | 3;
 
@@ -26,18 +23,8 @@ const questionTitleVariants = cva("text-lg font-bold", {
     },
 });
 
-const sampleData = [
-    {id: '1', label: '아주대학교'},
-    {id: '2', label: '소프트웨어 융합학과'},
-    {id: '3', label: '검색어에 해당하는 선택자 1'},
-    {id: '4', label: '검색어에 해당하는 선택자 2'},
-    {id: '6', label: '검색어에 해당하는 선택자 3'},
-    {id: '7', label: '검색어에 해당하는 선택자 4'},
-    {id: '5', label: '사이버보안학과'},
-];
-
 export function SignForm() {
-    const { mutate: registerMember } = useRegisterMember();
+    const {mutate: registerMember} = useRegisterPartner();
     const phoneAuthToken = useAuthStore((s) => s.phoneAuthToken);
     const setAccessToken = useAuthStore((s) => s.setAccessToken);
 
@@ -49,16 +36,14 @@ export function SignForm() {
         hideBottomMenu();
     }, []);
 
-    const [name, setName] = React.useState("");
-    const [birth, setBirth] = React.useState("");
-    const [affiliation, setAffiliation] = React.useState<string[]>([]);
+    const [userName, setUserName] = React.useState("");
+    const [partnerName, setPartnerName] = React.useState("");
+    const [pin, setPin] = React.useState<string>("");
 
     const [activeQuestion, setActiveQuestion] = React.useState<1 | 2 | 3>(1);
-    const [nameDone, setNameDone] = React.useState(false);
-    const [birthDone, setBirthDone] = React.useState(false);
-    const [affiliationDone, setAffiliationDone] = React.useState(false);
-    const [birthError, setBirthError] = React.useState<string>("");
-    const [birthErrorTrigger, setBirthErrorTrigger] = React.useState(false);
+    const [userNameDone, setUserNameDone] = React.useState(false);
+    const [partnerNameDone, setPartnerNameDone] = React.useState(false);
+    const [pinDone, setPinDone] = React.useState(false);
 
     const [introVisible, setIntroVisible] = React.useState(true);
     const [signCompleted, setSignCompleted] = React.useState(false);
@@ -70,7 +55,7 @@ export function SignForm() {
 
     React.useEffect(() => {
         if (!phoneAuthToken) {
-            navigate("/login", { replace: true });
+            navigate("/login", {replace: true});
         }
     }, [phoneAuthToken, navigate]);
 
@@ -80,16 +65,16 @@ export function SignForm() {
         registerMember(
             {
                 phoneAuthToken,
-                memberName: name,
-                memberBirth: birth,
-                departAt: affiliation,
+                userName,
+                partnerName,
+                pin,
             },
             {
                 onSuccess: (data) => {
                     setSignCompleted(true);
                     setAccessToken(data.accessToken);
                     setTimeout(() => {
-                        navigate("/coupon", { replace: true });
+                        navigate("/coupon", {replace: true});
                     }, 2000);
                 },
                 onError: (error: ApiError) => {
@@ -134,40 +119,36 @@ export function SignForm() {
                         }[] = [
                             {
                                 id: 1,
-                                value: name,
-                                setValue: setName,
-                                done: nameDone,
-                                setDone: setNameDone,
+                                value: userName,
+                                setValue: setUserName,
+                                done: userNameDone,
+                                setDone: setUserNameDone,
                                 getTitle: () =>
-                                    nameDone && name
-                                        ? `1. ${name}님, 안녕하세요!`
+                                    userNameDone && userName
+                                        ? `1. ${userName}님, 안녕하세요!`
                                         : "1. 이용자분의 이름은 무엇인가요?",
                                 inputLabel: "이름",
                             },
                             {
                                 id: 2,
-                                value: birth,
-                                setValue: setBirth,
-                                done: birthDone,
-                                setDone: setBirthDone,
+                                value: partnerName,
+                                setValue: setPartnerName,
+                                done: partnerNameDone,
+                                setDone: setPartnerNameDone,
                                 getTitle: () =>
-                                    birthDone && birth
-                                        ? `2. ${birth.slice(5, 7)}월 ${birth.slice(8, 10)}일 생일이시군요! 기억할게요 😎`
-                                        : "2. 생일은 언제세요?",
-                                inputLabel: "생일 (YYYY.MM.DD)",
+                                    partnerNameDone && partnerName
+                                        ? `2. '${partnerName}' 매장을 운영하시는군요!`
+                                        : "2. 운영하시는 매장의 상호는 무엇인가요?",
+                                inputLabel: "매장 상호",
                             },
                             {
                                 id: 3,
-                                value: affiliation.join(", "),
-                                setValue: () => {
-                                },
-                                done: affiliationDone,
-                                setDone: setAffiliationDone,
-                                getTitle: () =>
-                                    affiliationDone && affiliation.length > 0
-                                        ? `3. 지금 다니시는 곳은 ${affiliation.join(", ")}`
-                                        : "3. 지금 다니시는 학교나 회사, 단체가 있나요?",
-                                inputLabel: "소속단체",
+                                value: pin,
+                                setValue: setPin,
+                                done: pinDone,
+                                setDone: setPinDone,
+                                getTitle: () => "3. 사용하실 PIN을 입력해주세요!",
+                                inputLabel: "로그인용 PIN번호 입력 (6자리)",
                             },
                         ];
 
@@ -182,20 +163,12 @@ export function SignForm() {
 
                             if (!shouldShow) return null;
 
-                            const isActive = activeQuestion === id;
                             const isFilled = !!q.value;
 
                             const handleSubmit = () => {
                                 if (!q.value.trim()) return;
-
-                                if (id === 2) {
-                                    if (!isValidBirthDate(birth)) {
-                                        setBirthError("생년월일이 올바르지 않습니다");
-                                        setBirthErrorTrigger((prev) => !prev);
-                                        return;
-                                    } else {
-                                        setBirthError("");
-                                    }
+                                if (id===3){
+                                    handleSignSubmit()
                                 }
 
                                 q.setDone(true);
@@ -229,49 +202,20 @@ export function SignForm() {
                                     </span>
                                     </button>
 
-                                    {isActive && id === 3 && (
-                                        <div className="flex flex-row gap-2">
-                                            <MultiDropdownSelector
-                                                placeholder="소속단체 모두 선택"
-                                                searchPlaceholder="검색 키워드를 입력해주세요"
-                                                data={sampleData}
-                                                onSelect={(items) => setAffiliation(items.map(i => i.label))}
-                                            />
-                                            <IconButton
-                                                mode={"blue_line"}
-                                                icon={"rightArrow"}
-                                                onClick={handleSignSubmit}/>
-                                        </div>
-                                    )}
+                                    <InputGroup
+                                        label={q.inputLabel}
+                                        value={q.value}
+                                        onChange={(e) => q.setValue(e.target.value)}
+                                        rightAction={{
+                                            onClick: () => {
+                                                handleSubmit();
+                                            },
+                                            visible: isFilled,
+                                            mode: "blue_line",
+                                        }}
+                                    />
 
-                                    {isActive && id !== 3 && (
-                                        <InputGroup
-                                            label={q.inputLabel}
-                                            value={q.value}
-                                            onChange={
-                                                id === 2
-                                                    ? (e) => {
-                                                        q.setValue(formatBirthInput(e.target.value));
-                                                    }
-                                                    : (e) => q.setValue(e.target.value)
-                                            }
-                                            rightAction={{
-                                                onClick: () => {
-                                                    handleSubmit();
-                                                },
-                                                visible: isFilled,
-                                                mode: "blue_line",
-                                            }}
-                                            {...(id === 2
-                                                ? {
-                                                    errorMessage: birthError,
-                                                    errorTrigger: birthErrorTrigger,
-                                                }
-                                                : {})}
-                                        />
-                                    )}
                                 </div>
-
                             );
                         });
                     })()}

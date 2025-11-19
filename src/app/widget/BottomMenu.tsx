@@ -9,8 +9,8 @@ type Item = {
 };
 
 const items: Item[] = [
-    {to: "/coupon", icon: "coupon"},
     {to: "/issue", icon: "issue"},
+    {to: "/coupon", icon: "usedCoupon"},
     {to: "/notice", icon: "notification"},
     {to: "/settings", icon: "profile"},
 ];

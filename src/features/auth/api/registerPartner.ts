@@ -2,14 +2,14 @@ import axios from "axios";
 import {apiClient} from "../../../shared/lib/apiClient.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
 
-export interface RegisterMemberBody {
+export interface RegisterPartnerBody {
     phoneAuthToken: string;
-    memberName: string;
-    memberBirth: string; // "YYYY-MM-DD"
-    departAt: string[];
+    userName: string;
+    partnerName: string;
+    pin: string;
 }
 
-export interface RegisterMemberResponse {
+export interface RegisterPartnerResponse {
     accessToken: string;
 }
 
@@ -17,15 +17,15 @@ export interface RegisterMemberResponse {
  * 회원가입 API
  * body: {
  *      phoneAuthToken: string
- *      memberName: string
- *      memberBirth: string (YYYY-MM-DD)
- *      departAt: string[]
+ *      userName: string
+ *      partnerName: string (YYYY-MM-DD)
+ *      pin: string[]
  *         }
  * 성공 시 accessToken
  */
-export async function registerMember(body: RegisterMemberBody): Promise<RegisterMemberResponse> {
+export async function registerPartner(body: RegisterPartnerBody): Promise<RegisterPartnerResponse> {
     try {
-        const res = await apiClient.post<RegisterMemberResponse>("/auth/join/member", body);
+        const res = await apiClient.post<RegisterPartnerResponse>("/auth/join/member", body);
         return res.data;
     } catch (err) {
         if (axios.isAxiosError(err)) {

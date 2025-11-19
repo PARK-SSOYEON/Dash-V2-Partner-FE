@@ -1,1 +1,1 @@
-export * from './ui/MyCouponPage'
+export * from './ui/QRPaymentPage.tsx'

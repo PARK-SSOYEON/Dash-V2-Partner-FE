@@ -1,24 +1,27 @@
 import axios from "axios";
 import {apiClient} from "../../../shared/lib/apiClient.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
+import {hashPin} from "../lib/hashPin.ts";
 
-export interface FinalizePhoneLoginResponse {
+export interface FinalizePinLoginResponse {
     accessToken: string;
     name?: string | null;
 }
 
 /**
- * phoneAuthToken으로 최종 로그인 처리 API
- * body: { phoneAuthToken: string }
+ * pin으로 최종 로그인 처리 API
+ * body: { pin: string }
  * 성공 시 accessToken
  */
-export async function finalizePhoneLoginApi(
-    phoneAuthToken: string
-): Promise<FinalizePhoneLoginResponse> {
+export async function finalizePinLoginApi(
+    pin: string
+): Promise<FinalizePinLoginResponse> {
     try {
-        const res = await apiClient.post<FinalizePhoneLoginResponse>(
-            "/auth/login/phone",
-            { phoneAuthToken }
+        const hashedPin = hashPin(pin);
+
+        const res = await apiClient.post<FinalizePinLoginResponse>(
+            "/auth/login/pin",
+            { pin: hashedPin }
         );
         return res.data;
     } catch (err) {
