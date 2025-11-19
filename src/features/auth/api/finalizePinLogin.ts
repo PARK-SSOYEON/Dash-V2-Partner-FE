@@ -15,7 +15,7 @@ export interface FinalizePinLoginResponse {
 
 /**
  * pin으로 최종 로그인 처리 API
- * body: { pin: string }
+ * body: { phone: string, pin: string }
  * 성공 시 accessToken
  */
 export async function finalizePinLoginApi(body: FinalizePinLoginBody): Promise<FinalizePinLoginResponse> {
@@ -24,7 +24,7 @@ export async function finalizePinLoginApi(body: FinalizePinLoginBody): Promise<F
 
         const res = await apiClient.post<FinalizePinLoginResponse>(
             "/auth/login/pin",
-            {...body, pin: hashedPin }
+            {phone: body.phone, pin: hashedPin }
         );
         return res.data;
     } catch (err) {
