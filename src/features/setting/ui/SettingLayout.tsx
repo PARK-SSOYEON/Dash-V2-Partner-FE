@@ -1,7 +1,7 @@
 import {CouponRequestBlock} from "../../../shared/ui/CouponRequestBlock.tsx";
 import * as React from "react";
 import {useLocation} from "react-router-dom";
-import {useMyProfile} from "../hook/useMyProfile.ts";
+import {useMyProfile} from "../model/useMyProfile.ts";
 
 type Profile = {
     name: string;

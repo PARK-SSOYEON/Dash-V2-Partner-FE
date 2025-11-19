@@ -7,7 +7,7 @@ import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
 import {useAuthStore} from "../../../shared/store/authStore.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
-import {useChangePin} from "../hook/useChangePin.ts";
+import {useChangePin} from "../model/useChangePin.ts";
 
 type IssueStep = "prevPin" | "newPin";
 
