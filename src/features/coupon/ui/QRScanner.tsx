@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    Html5QrcodeScanner,
+    Html5Qrcode,
     Html5QrcodeSupportedFormats,
-    Html5QrcodeScanType,
 } from "html5-qrcode";
 
 interface QRScannerProps {
@@ -10,112 +9,131 @@ interface QRScannerProps {
     scannerId: string;
 }
 
-export const QRScanner: React.FC<QRScannerProps> = ({onScanSuccess, scannerId}) => {
-
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }) => {
+    const scannerRef = useRef<Html5Qrcode | null>(null);
     const [isScanned, setIsScanned] = useState(false);
 
     useEffect(() => {
-        // 이미 생성된 스캐너가 있으면 정리
         console.log("📌 [QRScanner] useEffect fired");
 
-        if (scannerRef.current) {
-            console.log("📌 [QRScanner] clearing previous scanner");
-
-            scannerRef.current.clear().catch(() => {
-                console.warn("📌 [QRScanner] clear error (ignored)");
-            });
-            scannerRef.current = null;
+        const container = document.getElementById(scannerId);
+        if (!container) {
+            console.error("❌ [QRScanner] container not found:", scannerId);
+            return;
         }
+
+        // 이미 뭔가 들어있으면 비워주기
+        container.innerHTML = "";
+        console.log("📌 [QRScanner] container cleared before start");
+
+        // Html5Qrcode 인스턴스 생성 (UI 래퍼 아님)
+        const html5QrCode = new Html5Qrcode(scannerId, {
+            verbose: true,
+        });
+        scannerRef.current = html5QrCode;
 
         const config = {
             fps: 10,
-            qrbox: {width: 320, height: 450},
-            rememberLastUsedCamera: true,
-            aspectRatio: 1.0,
-            useBarCodeDetectorIfSupported: false,
+            qrbox: { width: 320, height: 450 },
             formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+            // 여기서는 BarcodeDetector 안 씀 (엔진 기본 구현 사용)
         };
 
-        const verbose = true;
-        console.log("📌 [QRScanner] before new Html5QrcodeScanner, scannerId =", scannerId);
+        console.log("📌 [QRScanner] calling html5QrCode.start()");
 
-        const scanner = new Html5QrcodeScanner(scannerId, config, verbose);
-        console.log("📌 [QRScanner] scanner created:", scanner);
-
-        scannerRef.current = scanner;
-
-        console.log("📌 [QRScanner] calling scanner.render()");
-
-        scanner.render(
-            (decodedText: string) => {
-                console.log("📌 [QRScanner] scan success", decodedText);
-
-                setIsScanned(true);
-                onScanSuccess(decodedText);
-                try {
-                    scannerRef.current?.clear();
-                    console.log("📌 [QRScanner] scanner cleared after success");
-
-                } catch (e) {
-                    console.error("📌 [QRScanner] clear error after success", e);
+        html5QrCode
+            .start(
+                { facingMode: "environment" }, // 후면 카메라
+                config,
+                (decodedText: string) => {
+                    console.log("📌 [QRScanner] scan success:", decodedText);
+                    setIsScanned(true);
+                    onScanSuccess(decodedText);
+                },
+                (errorMessage: string) => {
+                    // 스캔 실패 로그 (너무 자주 찍힐 수 있어서 warn 정도로)
+                    console.warn("📌 [QRScanner] scan error:", errorMessage);
                 }
-            },
-            (errorMessage: string) => {
-                // 스캔 에러는 콘솔에만 출력(사용자에게는 노출 X)
-                console.warn("📌 [QRScanner] scan error", errorMessage);
-            }
-        );
+            )
+            .then(() => {
+                console.log("📌 [QRScanner] html5QrCode.start() resolved");
+            })
+            .catch((err) => {
+                console.error("❌ [QRScanner] html5QrCode.start() failed:", err);
+            });
 
+        // 디버깅용: DOM에 뭐가 들어갔는지 확인
         setTimeout(() => {
             const el = document.getElementById(scannerId);
             console.log(
-                "📌 [QRScanner] container after render:",
+                "📌 [QRScanner] container after start:",
                 el,
                 "innerHTML length =",
                 el?.innerHTML.length
             );
         }, 1000);
 
-
         return () => {
             console.log("📌 [QRScanner] cleanup");
 
-            if (scannerRef.current) {
-                scannerRef.current.clear().catch(() => {
-                    console.warn("📌 [QRScanner] clear error on unmount (ignored)");
-                });
-                scannerRef.current = null;
-            }
+            if (!scannerRef.current) return;
+
+            const qr = scannerRef.current;
+            // 바로 null로 만들어서 중복 stop/clear를 방지
+            scannerRef.current = null;
+
+            (async () => {
+                try {
+                    await qr.stop();
+                } catch (err) {
+                    console.warn("📌 [QRScanner] stop error on unmount (ignored):", err);
+                }
+
+                try {
+                    await qr.clear();
+                } catch (err) {
+                    console.warn("📌 [QRScanner] clear error on unmount (ignored):", err);
+                }
+            })();
         };
     }, [onScanSuccess, scannerId]);
 
     return (
         <div className="flex flex-col items-center justify-center space-y-2 bg-white">
-            <div className={"relative w-[320px] h-[450px]"}>
+            <div className="relative w-[320px] h-[450px]">
+                {/* 여기 안에 Html5Qrcode가 video/canvas를 직접 박아줌 */}
                 <div
                     id={scannerId}
                     className="w-full h-full bg-white rounded-3xl overflow-hidden"
-                ></div>
-                <div className={"pointer-events-none absolute inset-0 flex items-center justify-center"}>
-                    <div
-                        className={`absolute top-2 left-2 w-20 h-20 border-4 ${isScanned ? "border-(--color-blue-500)" : "border-gray-400"} border-b-0 border-r-0 rounded-tl-3xl`}/>
-                    <div
-                        className={`absolute top-2 right-2 w-20 h-20 border-4 ${isScanned ? "border-(--color-blue-500)" : "border-gray-400"} border-b-0 border-l-0 rounded-tr-3xl`}/>
-                    <div
-                        className={`absolute bottom-2 left-2 w-20 h-20 border-4 ${isScanned ? "border-(--color-blue-500)" : "border-gray-400"} border-t-0 border-r-0 rounded-bl-3xl`}/>
-                    <div
-                        className={`absolute bottom-2 right-2 w-20 h-20 border-4 ${isScanned ? "border-(--color-blue-500)" : "border-gray-400"} border-t-0 border-l-0 rounded-br-3xl`}/>
+                />
 
-                    {/* 안내 텍스트 */}
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div
+                        className={`absolute top-2 left-2 w-20 h-20 border-4 ${
+                            isScanned ? "border-(--color-blue-500)" : "border-gray-400"
+                        } border-b-0 border-r-0 rounded-tl-3xl`}
+                    />
+                    <div
+                        className={`absolute top-2 right-2 w-20 h-20 border-4 ${
+                            isScanned ? "border-(--color-blue-500)" : "border-gray-400"
+                        } border-b-0 border-l-0 rounded-tr-3xl`}
+                    />
+                    <div
+                        className={`absolute bottom-2 left-2 w-20 h-20 border-4 ${
+                            isScanned ? "border-(--color-blue-500)" : "border-gray-400"
+                        } border-t-0 border-r-0 rounded-bl-3xl`}
+                    />
+                    <div
+                        className={`absolute bottom-2 right-2 w-20 h-20 border-4 ${
+                            isScanned ? "border-(--color-blue-500)" : "border-gray-400"
+                        } border-t-0 border-l-0 rounded-br-3xl`}
+                    />
+
                     <p className="text-base font-medium text-(--color-blue-500) text-center">
-                        등록코드를<br/>가이드에 맞춰주세요
+                        결제코드를<br />가이드에 맞춰주세요
                     </p>
                 </div>
-
             </div>
-
         </div>
     );
 };
