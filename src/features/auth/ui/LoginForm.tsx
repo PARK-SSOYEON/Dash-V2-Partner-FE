@@ -206,7 +206,7 @@ export function LoginForm() {
                             mode="color_fill"
                             icon={"identify"}
                             iconPosition='left'
-                            onClick={() => navigate(loginResult?.isUsed ? "/coupon" : "/sign")}
+                            onClick={() => navigate(loginResult?.isUsed ? "/issue" : "/sign")}
                         >
                             {loginResult?.isUsed
                                 ? `${userName ?? "000"}으로 계속`

@@ -3,28 +3,24 @@ import {Icon} from "../../../shared/ui/Icon.tsx";
 interface CouponHistoryItem {
     id: string;
     title: string;
-    partner: string;
     usedAt: string;
 }
 
 const MOCK_ITEMS: CouponHistoryItem[] = [
     {
         id: "1",
-        title: "{{메뉴이름_만약 길다면 이런식으로...}}",
-        partner: "{{가게명}}",
-        usedAt: "{{사용일시}}",
+        title: "삼아일미 서비스 쿠폰",
+        usedAt: "2025.11.20. 12:22:32",
     },
     {
         id: "2",
-        title: "{{메뉴이름_만약 길다면 이런식으로...}}",
-        partner: "{{가게명}}",
-        usedAt: "{{사용일시}}",
+        title: "삼아일미 서비스 쿠폰",
+        usedAt: "2025.11.20. 13:19:06",
     },
     {
         id: "3",
-        title: "{{메뉴이름_만약 길다면 이런식으로...}}",
-        partner: "{{가게명}}",
-        usedAt: "{{사용일시}}",
+        title: "삼아일미 서비스 쿠폰",
+        usedAt: "2025.11.20. 14:41:51",
     },
 ];
 
@@ -51,7 +47,6 @@ export function ListView() {
                                 {item.title}
                             </p>
                             <div className="flex flex-row gap-2 text-[11px] text-black/50">
-                                <span>{item.partner}</span>
                                 <span>·</span>
                                 <span>{item.usedAt}</span>
                             </div>
