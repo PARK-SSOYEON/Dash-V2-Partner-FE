@@ -22,7 +22,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         const config = {
             fps: 10,
-            qrbox: { width: 250, height: 250 },
+            qrbox: { width: 350, height: 450 },
             rememberLastUsedCamera: true,
             aspectRatio: 1.0,
         };
@@ -57,7 +57,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
     return (
         <div className="flex flex-col items-center justify-center space-y-4 bg-white">
-            <div className={"relative w-[250px] h-[250px]"}>
+            <div className={"relative w-[350px] h-[450px]"}>
                 <div
                     id={scannerId}
                     className="w-full h-full bg-white rounded-3xl overflow-hidden"

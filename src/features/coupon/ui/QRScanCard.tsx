@@ -94,7 +94,7 @@ export const QRScanCard: React.FC = () => {
             </div>
 
             {(product && step === 'SCAN') &&
-                <div className={"flex w-full col-row"}>
+                <div className={"flex w-full col-row gap-4"}>
                     <Button
                         mode="mono"
                         icon={"leftChevron"}
@@ -102,7 +102,7 @@ export const QRScanCard: React.FC = () => {
                         onClick={() => setProduct(null)}> 이전 </Button>
                     <Button
                         mode="color_fill"
-                        icon={"leftChevron"}
+                        icon={"credit"}
                         iconPosition={"right"}
                         onClick={handleUse}> 쿠폰 사용 </Button>
                 </div>}

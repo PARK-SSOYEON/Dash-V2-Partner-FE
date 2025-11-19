@@ -4,7 +4,6 @@ import {QRScanCard} from "./QRScanCard.tsx";
 import {ToggleButton} from "../../../shared/ui/buttons/ToggleButton.tsx";
 import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
 import {ListView} from "./ListView.tsx";
-import {cn} from "../../../shared/lib/cn.ts";
 import {Icon} from "../../../shared/ui/Icon.tsx";
 
 export function QRPaymentPage() {

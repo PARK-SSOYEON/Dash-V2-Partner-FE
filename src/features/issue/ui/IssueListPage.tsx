@@ -5,6 +5,7 @@ import {ToggleButton} from "../../../shared/ui/buttons/ToggleButton.tsx";
 import {Button} from "../../../shared/ui/buttons/Button.tsx";
 import {useUIStore} from "../../../shared/store/uiStore.ts";
 import {useNavigate} from "react-router-dom";
+import {useIsLandscape} from "../../../shared/hook/useIsLandscape.ts";
 
 // TODO - status back에 맞춰 수정
 export type IssueStatus = "WAITING" | "PAYMENT_PENDING" | "PUBLISHED" | "REJECTED" | "DISTRIBUTED" | "USED";
@@ -28,6 +29,7 @@ const ISSUE_STATUS_LABEL: Record<IssueStatus, string> = {
 
 export function IssueListPage() {
     const navigate = useNavigate();
+    const isLandScape = useIsLandscape();
 
     const [issues, setIssues] = React.useState<IssueSummary[]>([]);
     const [statusFilter, setStatusFilter] = React.useState<IssueStatus | "ALL">("ALL");
@@ -143,8 +145,11 @@ export function IssueListPage() {
                     iconPosition='left'
                     className={"fixed left-1/2 -translate-x-1/2 supports-[backdrop-filter]:bg-white/50 backdrop-blur-md px-4 "}
                     style={{
-                        width: "min(calc(100vw - (var(--gutter,24px) * 2)), calc(var(--container-max,450px) - (var(--gutter,24px) * 2)))",
-                        bottom: "max(1.5rem, env(safe-area-inset-bottom))",
+                        width: isLandScape
+                            ? "calc(((100vw * 2 / 3) - (var(--gutter,48px) * 2))*0.7)"
+                            : "calc((100vw - (var(--gutter,48px) * 2))*0.7)",
+                        left: isLandScape ? "33vw" : "50%",
+                        bottom: "max(2rem, env(safe-area-inset-bottom))",
                         height: "var(--bottom-nav-h,66px)",
                     }}
                 > 삭제하기 </Button>
