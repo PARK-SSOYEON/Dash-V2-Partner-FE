@@ -117,11 +117,14 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
     return (
         <div className="flex flex-col items-center justify-center space-y-2 bg-white">
-            <div className="relative w-[320px] h-[450px]">
-                {/* 여기 안에 Html5Qrcode가 video/canvas를 직접 박아줌 */}
+            <div
+                className="relative"
+                style={{width: 320, height: 450, background: "#eee"}}
+            >              
                 <div
                     id={scannerId}
                     className="w-full h-full bg-white rounded-3xl overflow-hidden"
+                    style={{ width: "100%", height: "100%" }}
                 />
 
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
