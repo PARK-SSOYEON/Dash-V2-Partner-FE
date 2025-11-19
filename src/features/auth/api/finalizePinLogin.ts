@@ -3,6 +3,11 @@ import {apiClient} from "../../../shared/lib/apiClient.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
 import {hashPin} from "../lib/hashPin.ts";
 
+export interface FinalizePinLoginBody {
+    phone: string;
+    pin: string;
+}
+
 export interface FinalizePinLoginResponse {
     accessToken: string;
     name?: string | null;
@@ -13,15 +18,13 @@ export interface FinalizePinLoginResponse {
  * body: { pin: string }
  * 성공 시 accessToken
  */
-export async function finalizePinLoginApi(
-    pin: string
-): Promise<FinalizePinLoginResponse> {
+export async function finalizePinLoginApi(body: FinalizePinLoginBody): Promise<FinalizePinLoginResponse> {
     try {
-        const hashedPin = hashPin(pin);
+        const hashedPin = hashPin(body.pin);
 
         const res = await apiClient.post<FinalizePinLoginResponse>(
             "/auth/login/pin",
-            { pin: hashedPin }
+            {...body, hashedPin }
         );
         return res.data;
     } catch (err) {

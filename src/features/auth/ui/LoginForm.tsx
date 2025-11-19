@@ -83,7 +83,7 @@ export function LoginForm() {
         }
         setErrorMsg(undefined);
 
-        verifyPhoneCode(otp, {
+        verifyPhoneCode( otp, {
             onSuccess: (data) => {
                 setPhoneAuthToken(data.phoneAuthToken);
                 setStep("done");
@@ -107,7 +107,12 @@ export function LoginForm() {
         }
         setErrorMsg(undefined);
 
-        finalizePinLogin(pin, {
+        finalizePinLogin(
+            {
+                phone: phone.replace(/\D/g, ""),
+                pin
+            },
+            {
             onSuccess: (loginData) => {
                 setAccessToken(loginData.accessToken);
                 setUserName(loginData.name ?? null);
