@@ -11,7 +11,7 @@ interface QRScannerProps {
 
 export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }) => {
     const scannerRef = useRef<Html5Qrcode | null>(null);
-    const hasStartedRef = useRef(false); 
+    const hasStartedRef = useRef(false);
     const [isScanned, setIsScanned] = useState(false);
 
     useEffect(() => {
@@ -70,12 +70,23 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         // 디버깅용: DOM에 뭐가 들어갔는지 확인
         setTimeout(() => {
-            const el = document.getElementById(scannerId);
+            const el = document.getElementById(scannerId) as HTMLDivElement | null;
+            if (!el) {
+                console.log("📌 [QRScanner] container not found after start");
+                return;
+            }
+
+            const rect = el.getBoundingClientRect();
             console.log(
                 "📌 [QRScanner] container after start:",
-                el,
-                "innerHTML length =",
-                el?.innerHTML.length
+                {
+                    innerHTMLLength: el.innerHTML.length,
+                    offsetWidth: el.offsetWidth,
+                    offsetHeight: el.offsetHeight,
+                    clientWidth: el.clientWidth,
+                    clientHeight: el.clientHeight,
+                    rect,
+                }
             );
         }, 1000);
 
