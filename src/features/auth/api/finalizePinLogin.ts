@@ -24,7 +24,7 @@ export async function finalizePinLoginApi(body: FinalizePinLoginBody): Promise<F
 
         const res = await apiClient.post<FinalizePinLoginResponse>(
             "/auth/login/pin",
-            {...body, hashedPin }
+            {...body, pin: hashedPin }
         );
         return res.data;
     } catch (err) {
