@@ -19,7 +19,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             console.log("📌 [QRScanner] clearing previous scanner");
 
             scannerRef.current.clear().catch(() => {
-                // ignore clear error
+                console.warn("📌 [QRScanner] clear error (ignored)");
             });
             scannerRef.current = null;
         }
@@ -31,13 +31,16 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             aspectRatio: 1.0,
         };
 
-        const verbose = false;
+        const verbose = true;
+        console.log("📌 [QRScanner] before new Html5QrcodeScanner, scannerId =", scannerId);
+
         const scanner = new Html5QrcodeScanner(scannerId, config, verbose);
         console.log("📌 [QRScanner] scanner created:", scanner);
 
         scannerRef.current = scanner;
 
         console.log("📌 [QRScanner] calling scanner.render()");
+
         scanner.render(
             (decodedText: string) => {
                 console.log("📌 [QRScanner] scan success", decodedText);
@@ -46,7 +49,11 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
                 onScanSuccess(decodedText);
                 try {
                     scannerRef.current?.clear();
-                } catch (_) {}
+                    console.log("📌 [QRScanner] scanner cleared after success");
+
+                } catch (e) {
+                    console.error("📌 [QRScanner] clear error after success", e);
+                }
             },
             (errorMessage: string) => {
                 // 스캔 에러는 콘솔에만 출력(사용자에게는 노출 X)
@@ -54,10 +61,23 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             }
         );
 
+        setTimeout(() => {
+            const el = document.getElementById(scannerId);
+            console.log(
+                "📌 [QRScanner] container after render:",
+                el,
+                "innerHTML length =",
+                el?.innerHTML.length
+            );
+        }, 1000);
+
+
         return () => {
+            console.log("📌 [QRScanner] cleanup");
+
             if (scannerRef.current) {
                 scannerRef.current.clear().catch(() => {
-                    // ignore clear error
+                    console.warn("📌 [QRScanner] clear error on unmount (ignored)");
                 });
                 scannerRef.current = null;
             }
