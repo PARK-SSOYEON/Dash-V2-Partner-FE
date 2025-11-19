@@ -52,7 +52,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         html5QrCode
             .start(
-                { facingMode: "environment" }, // 후면 카메라
+                { facingMode: "user" }, // 후면 카메라: environmen t
                 config,
                 (decodedText: string) => {
                     console.log("📌 [QRScanner] scan success:", decodedText);
@@ -120,7 +120,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             <div
                 className="relative"
                 style={{width: 320, height: 450, background: "#eee"}}
-            >              
+            >
                 <div
                     id={scannerId}
                     className="w-full h-full bg-white rounded-3xl overflow-hidden"
