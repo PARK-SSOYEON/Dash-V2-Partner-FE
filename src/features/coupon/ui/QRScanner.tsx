@@ -13,7 +13,11 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
     useEffect(() => {
         // 이미 생성된 스캐너가 있으면 정리
+        console.log("📌 [QRScanner] useEffect fired");
+
         if (scannerRef.current) {
+            console.log("📌 [QRScanner] clearing previous scanner");
+
             scannerRef.current.clear().catch(() => {
                 // ignore clear error
             });
@@ -29,10 +33,15 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
 
         const verbose = false;
         const scanner = new Html5QrcodeScanner(scannerId, config, verbose);
+        console.log("📌 [QRScanner] clearing previous scanner");
+
         scannerRef.current = scanner;
 
+        console.log("📌 [QRScanner] calling scanner.render()");
         scanner.render(
             (decodedText: string) => {
+                console.log("📌 [QRScanner] scan success", decodedText);
+
                 setIsScanned(true);
                 onScanSuccess(decodedText);
                 try {
@@ -41,7 +50,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanSuccess, scannerId }
             },
             (errorMessage: string) => {
                 // 스캔 에러는 콘솔에만 출력(사용자에게는 노출 X)
-                console.warn("QR scan error", errorMessage);
+                console.warn("📌 [QRScanner] scan error", errorMessage);
             }
         );
 
