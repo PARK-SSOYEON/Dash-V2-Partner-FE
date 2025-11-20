@@ -8,6 +8,7 @@ import type {IssueRequestDetailResponse} from "../api/getIssueRequestDetail.ts";
 import {useNavigate} from "react-router-dom";
 import {useRejectIssue} from "../model/useRejectIssue.ts";
 import type {ApiError} from "../../../shared/types/api.ts";
+import * as React from "react";
 
 export function IssueRequest({issue}: {issue: IssueRequestDetailResponse}) {
     const [openRejectForm, setOpenRejectForm] = useState<boolean>(false);
@@ -16,11 +17,27 @@ export function IssueRequest({issue}: {issue: IssueRequestDetailResponse}) {
 
     const navigate = useNavigate();
 
-    const [menuItems, setMenuItems] = useState<IssueItem[]>([
-        {rowId: "1", isNew: true, name: "오리지널 타코야끼", qty: 5},
-        {rowId: "2", isNew: true, name: "네기 타코야끼", qty: 100},
-        {rowId: "3", isNew: true, name: "눈꽃치즈 타코야끼", qty: 1000},
-    ]);
+    const [menuItems, setMenuItems] = React.useState<IssueItem[]>(() =>
+        issue.products.map((product, index) => ({
+            rowId: String(product.productId ?? index + 1),
+            productId: product.productId,
+            isNew: !product.productId,
+            name: product.productName ?? "",
+            qty: product.count,
+        }))
+    );
+
+    React.useEffect(() => {
+        setMenuItems(
+            issue.products.map((product, index) => ({
+                rowId: String(product.productId ?? index + 1),
+                productId: product.productId,
+                isNew: !product.productId,
+                name: product.productName ?? "",
+                qty: product.count,
+            }))
+        );
+    }, [issue.products]);
 
     const isPending = issue.status === "ISSUE_STATUS/PENDING";
     const isDecided = [

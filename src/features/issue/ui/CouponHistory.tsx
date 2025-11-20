@@ -14,8 +14,8 @@ type CouponHistoryProps = {
 };
 
 export function CouponHistory({issueInfo, issueId}: CouponHistoryProps) {
-    const { mutate: exportList } = useExportIssueCouponList();
-    const { mutate: exportImage } = useExportIssueCouponImage();
+    const {mutate: exportList} = useExportIssueCouponList();
+    const {mutate: exportImage} = useExportIssueCouponImage();
     const navigate = useNavigate();
 
     const items: DetailItem[] = [
@@ -41,11 +41,27 @@ export function CouponHistory({issueInfo, issueId}: CouponHistoryProps) {
         },
     ];
 
-    const [menuItems, setMenuItems] = React.useState<IssueItem[]>([
-        {rowId: "1", isNew: true, name: "오리지널 타코야끼", qty: 5},
-        {rowId: "2", isNew: true, name: "네기 타코야끼", qty: 100},
-        {rowId: "3", isNew: true, name: "눈꽃치즈 타코야끼", qty: 1000},
-    ]);
+    const [menuItems, setMenuItems] = React.useState<IssueItem[]>(() =>
+        issueInfo.products.map((product, index) => ({
+            rowId: String(product.productId ?? index + 1),
+            productId: product.productId,
+            isNew: !product.productId,
+            name: product.productName ?? "",
+            qty: product.count,
+        }))
+    );
+
+    React.useEffect(() => {
+        setMenuItems(
+            issueInfo.products.map((product, index) => ({
+                rowId: String(product.productId ?? index + 1),
+                productId: product.productId,
+                isNew: !product.productId,
+                name: product.productName ?? "",
+                qty: product.count,
+            }))
+        );
+    }, [issueInfo.products]);
 
     const handleListDownload = () => {
         if (!issueId) return;
