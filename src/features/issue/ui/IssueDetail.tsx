@@ -2,13 +2,17 @@ import { IssueRequest } from "./IssueRequest.tsx";
 import { SlideSelector } from "../../../shared/ui/SlideSelector.tsx";
 import { useState } from "react";
 import { CouponHistory } from "./CouponHistory.tsx";
-import { useNavigate, useParams } from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import { Icon } from "../../../shared/ui/Icon.tsx";
 import { useIssueRequestDetail } from "../model/useIssueRequestDetail";
 import {useIssueCoupons} from "../model/useIssueCoupons";
 import {CouponRejectHistory} from "./CouponRejectHistory.tsx";
+import type {IssueStatusCode} from "../model/issueStatusType.ts";
 
 export function IssueDetail() {
+    const location = useLocation();
+    const passedStatus = location.state?.status as IssueStatusCode | undefined;
+
     const [tap, setTap] = useState('발행요청서');
     const navigate = useNavigate();
 
@@ -19,9 +23,9 @@ export function IssueDetail() {
         data: issue,
         isLoading,
         isError,
-    } = useIssueRequestDetail(numericIssueId, tap === "발행요청서");
+    } = useIssueRequestDetail(numericIssueId, true);
 
-    const status = issue?.status;
+    const status = passedStatus;
 
     const {
         data: issueCoupons,
@@ -35,7 +39,7 @@ export function IssueDetail() {
 
     const baseOptions = [
         "발행요청서",
-        issue?.status === "ISSUE_STATUS/REJECTED" ? "반려정보" : "쿠폰내역",
+        passedStatus === "ISSUE_STATUS/REJECTED" ? "반려정보" : "쿠폰내역",
         "주요통계",
     ] as const;
 

@@ -40,7 +40,7 @@ export function IssueListPage() {
 
     const issues = data?.items ?? [];
 
-    const handleClickIssue = (issueId: string) => {
+    const handleClickIssue = (issueId: string, status: IssueStatusCode) => {
         if (selectMode) {
             setSelectedIds((prev) => {
                 if (prev.includes(issueId)) {
@@ -50,7 +50,7 @@ export function IssueListPage() {
                 }
             });
         } else {
-            navigate(`./${issueId}`)
+            navigate(`./${issueId}`, {state: {status}})
         }
     };
 
@@ -146,7 +146,7 @@ export function IssueListPage() {
                         key={issue.requestId}
                         mode={selectMode ? "select" : "normal"}
                         selected={selectedIds.includes(String(issue.requestId))}
-                        onClick={() => handleClickIssue(String(issue.requestId))}
+                        onClick={() => handleClickIssue(String(issue.requestId), issue.status)}
                         title={issue.title}
                         itemCount={issue.productKindCount}
                         statusLabel={ISSUE_STATUS_LABEL[issue.status]}
